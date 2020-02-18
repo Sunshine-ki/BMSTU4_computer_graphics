@@ -54,7 +54,8 @@ def check_answer(answer):
 
 def paint_point(a):
     canv.create_oval(a[0] - radius_point + 400, fabs(a[1] - radius_point - 400),
-                     a[0] + radius_point + 400, fabs(a[1] + radius_point - 400), width=2, fill='red', outline='black')  # ,tag = "x" + str(len(point_lst)))# tag=str(a[0])+" "+str(a[1]))
+                     a[0] + radius_point + 400, fabs(a[1] + radius_point - 400), 
+                     width=2, fill='red', outline='black')
 
 
 def paint_line(a, b):
@@ -69,36 +70,46 @@ def paint_result(a, b, c, h):
                      arrowshape="10 20 10")
     canv.create_line(400, 0, 400, 800, fill="gray", width=2, arrow=FIRST,
                      arrowshape="10 20 10")
+
     # Делаем рисонок больше.
-    p = [a[0], a[1], b[0], b[1], c[0], c[1], h[0], h[1]]
+    p_copy = [a[0], a[1], b[0], b[1], c[0], c[1], h[0], h[1]]
+    p = [a[0], a[1], b[0], b[1], c[0], c[1], h[0], h[1], 0, 0]
+    name_point = ["A", "B", "C", "H"]
     max_x = p[0]
     max_y = p[1]
-    for num in p:
-        if num > max_x:
-            max_x = num
-        if num > max_y:
-            max_y = num
-    if max_x > max_y:
+
+    for i in range(0, len(p), 2):
+        # print(p[i], p[i+1])
+        if fabs(p[i]) > fabs(max_x):
+            max_x = p[i]
+        if fabs(p[i + 1]) > fabs(max_y):
+            max_y = p[i + 1]
+    if fabs(max_x) > fabs(max_y):
         maximum = max_x
     else:
         maximum = max_y
 
-    coefficient = int((max_coordinate - 40) / maximum)
-    if coefficient == 0:
+    coefficient = fabs((max_coordinate - 140) / maximum)
+    if coefficient == 0: 
         coefficient = 1
+
     # print("X = ", max_x, "Y = ", max_y, "MAX = ", maximum)
     # print("Коэффициент: ", coefficient)
 
     for i in range(len(p)):
         p[i] *= coefficient
+
     # print(p)
 
     for i in range(0, 8, 2):
         paint_point((p[i], p[i + 1]))
-        canv.create_text(p[i] + 330, fabs(p[i + 1] - 400),
-                         text="({:.2f}; {:.2f} {:d})".format(
-            round(p[i], 3), round(p[i + 1], 3), int(i / 2)), font="Verdana 12", fill="red")
         paint_line((p[i], p[i + 1]), (p[6], p[7]))
+        canv.create_text(p[i] + 330, fabs(p[i + 1] - 400),
+            text = name_point[int(i / 2)] + "(" + str(round(p_copy[i], 2)) +
+            ";" + str(round(p_copy[i + 1], 2)) + ")",
+            font="Verdana 12", fill="red")
+            # text="{:s} ({:f}; {:f})".format(name_point[int(i / 2)],
+            # round(p_copy[i], 3), round(p_copy[i + 1], 3)), 
 
     paint_line((p[0], p[1]), (p[2], p[3]))
     paint_line((p[0], p[1]), (p[4], p[5]))
@@ -238,10 +249,33 @@ def function_solution():
                     triangles = a, b, c
                     res_point[0], res_point[1] = intersection[0], intersection[1]
 
+    # if intersection[0] > max_coordinate || intersection[1] > max_coordinate:
+        # mb.showerror(title="Ошибка", message="")
+        # return       
     if max_sum == -1:
         mb.showerror(title="Ошибка", message="Нет решения")
         return
     paint_result(triangles[0], triangles[1], triangles[2], intersection)
+    answer = mb.showinfo(title="Результат", message="Ура! Нам удалось найти подходящий под \
+условие утреугольник! Давайте взглянем на него. Вот его координаты:\
+\nA(" + str(round(triangles[0][0], 2)) + ";" +  str(round(triangles[0][1], 2)) +
+")\nB(" + str(round(triangles[1][0], 2)) + ";" +  str(round(triangles[1][1], 2)) +
+")\nC(" + str(round(triangles[2][0], 2)) + ";" +  str(round(triangles[2][1], 2)) +
+")\nТочка пересечения высот:" +
+"\nH(" + str(round(intersection[0], 2)) + ";" +  str(round(intersection[1], 2)) +
+")\nИ сумма расстояний от точки пересечения высот до осей координат = " + str(round(distance(intersection),2)))
+
+
+# "Ура! Нам удалось найти подходящий под \
+# условие утреугольник! Давайте взглянем на него. Вот его координаты: \
+# \nA({:.2f}, {:.2f})\
+# \nB({:.2f}, {:.2f})\
+# \nC({:.2f}, {:.2f})\
+# \nТочка пересечения высот:\
+# \nH({:.2f}, {:.2f})\
+# \nИ сумма расстояний от точки пересечения высот до осей координат = {:.2f}".format(triangles[0][0], triangles[0][1], triangles[1][0], 
+#     triangles[1][1],triangles[2][0], triangles[2][1], intersection[0], intersection[1], distance(intersection)))
+
 
 
 def paint(canv):
@@ -341,8 +375,8 @@ if __name__ == "__main__":
     button_del_all.place(x=1000, y=750, anchor="center")
 
     # showerror(), showinfo() и showwarning().
-    answer = mb.showinfo(title="Начало работы", message="Добро пожаловать \
-    в геометрическую программу, чтобы вам проще было её использовать предлагаю \
-    прочитать инструкцию, которая находится в верхнем левом углу.")
+    # answer = mb.showinfo(title="Начало работы", message="Добро пожаловать \
+    # в геометрическую программу, чтобы вам проще было её использовать предлагаю \
+    # прочитать инструкцию, которая находится в верхнем левом углу.")
 
     root.mainloop()

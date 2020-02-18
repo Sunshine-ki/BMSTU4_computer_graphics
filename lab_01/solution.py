@@ -34,38 +34,3 @@ def find_intersection_point(a, b):
 def distance(a):
     # print("Точка: ", a)
     return fabs(a[0]) + fabs(a[1])
-
-
-# def main():
-#     A = np.matrix('1 2 3; 4 5 6')
-#     B = np.matrix('7 8; 9 1; 2 3')
-#     C = A.dot(B)
-#     print(C)
-
-    # point_lst = [(5.0, -1.0), (4.0, -8.0), (-4.0, -4.0)]
-    # # print(point_lst)
-
-    # # Ищем АС.
-    # line_one = find_coefficients(point_lst[0], point_lst[2])
-    # # print(line_one)
-
-    # # Ищем BQ. (Высота)
-    # k = perpendicular_lines(line_one[0])
-    # line_perpendicular_one = (k, find_coefficients_b(point_lst[1], k))
-    # # print("BQ = ", line_perpendicular_one)
-
-    # # Ищем BC.
-    # line_two = find_coefficients(point_lst[1], point_lst[2])
-    # # print(line_two)
-
-    # # Ищем AP. (Вторая высота).
-    # k = perpendicular_lines(line_two[0])
-    # line_perpendicular_two = (k, find_coefficients_b(point_lst[0],k))
-    # # print("AP = ", line_perpendicular_two)
-
-    # # Ищем точку пересечения высот.
-    # print(find_intersection_point(line_perpendicular_one, line_perpendicular_two))
-
-
-# if __name__ == "__main__":
-#     main()
