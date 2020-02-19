@@ -225,12 +225,22 @@ def function_solution():
             for k in range(j + 1, n):
                 # print(point_lst[i], point_lst[j], point_lst[k])
                 a, b, c = point_lst[i], point_lst[j], point_lst[k]
+
+
                 if a[0] == b[0] == c[0]:
                     # print("Точки лежат на одной прямой. (Параллельно оси У)")
                     continue
                 if find_coefficients(point_lst[i], point_lst[j]) == find_coefficients(point_lst[j], point_lst[k]):
                     # print("Точки лежат на одной прямой.")
                     continue
+                perpendicular = perpendicular_triangles(a, b, c)
+                if perpendicular[0] != False:
+                    intersection = perpendicular
+                    if (distance(intersection) > max_sum):
+                        max_sum = distance(intersection)
+                        triangles = a, b, c
+                        res_point[0], res_point[1] = intersection[0], intersection[1]
+                        continue
 
                 line_one = find_coefficients(a, c)
                 k = perpendicular_lines(line_one[0])
@@ -375,8 +385,8 @@ if __name__ == "__main__":
     button_del_all.place(x=1000, y=750, anchor="center")
 
     # showerror(), showinfo() и showwarning().
-    # answer = mb.showinfo(title="Начало работы", message="Добро пожаловать \
-    # в геометрическую программу, чтобы вам проще было её использовать предлагаю \
-    # прочитать инструкцию, которая находится в верхнем левом углу.")
+    answer = mb.showinfo(title="Начало работы", message="Добро пожаловать \
+    в геометрическую программу, чтобы вам проще было её использовать предлагаю \
+    прочитать инструкцию, которая находится в верхнем левом углу.")
 
     root.mainloop()
