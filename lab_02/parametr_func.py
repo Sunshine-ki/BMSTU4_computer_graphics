@@ -6,15 +6,6 @@ win_size = 1000
 a = 80
 b = 120
 
-# def moving():
-# 	print("Введите dx и dy:")
-# 	dx = float(input())
-# 	dy = float(input())
-
-# 	matrix_mov = [[1, 0, 0],
-# 				[0, 1, 0],
-# 				[dx, dy, 1]]
-
 
 def paint_point(cordinate):
     r = 1

@@ -26,7 +26,18 @@ def func_y(t):
     return (a+b)*sin(t)-a*sin((a+b)*t/a)
 
 
-def multiplication(vector, matrix):
+def multiplication_matrix(matrix_a, matrix_b):
+    matrix_res = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    for i in range(3):
+        for j in range(3):
+            temp = 0
+            for k in range(3):
+                temp += matrix_a[i][k] * matrix_b[k][j]
+            matrix_res[i][j] = temp
+    return matrix_res
+
+
+def multiplication_vector(vector, matrix):
     vector_res = [0, 0, 0]
 
     for i in range(3):
@@ -143,7 +154,7 @@ def moving_func(dx, dy):
     inverse_matrix = inverse_func(matrix_mov)
 
     for i in range(len(list_point)):
-        list_point[i] = multiplication(list_point[i], matrix_mov)
+        list_point[i] = multiplication_vector(list_point[i], matrix_mov)
         # list_point[i] = np.dot(list_point[i], matrix_mov)
     print_scene()
 
@@ -156,25 +167,30 @@ def rotation():
     if (angle == false):
         return
 
+    dx = -list_point[len(list_point) - 1][0]
+    dy = -list_point[len(list_point) - 1][1]
+
     # Переводим в радианы.
     angle *= pi / 180
     matrix = [[cos(angle), sin(angle), 0],
               [-sin(angle), cos(angle), 0],
               [0, 0, 1]]
 
+    matrix_mov = [[1, 0, 0],
+                  [0, 1, 0],
+                  [dx, dy, 1]]
+
+    matrix_res = multiplication_matrix(matrix_mov, matrix)
+    matrix_mov[2][0], matrix_mov[2][1] = -dx, -dy
+    matrix_res = multiplication_matrix(matrix_res, matrix_mov)
+
     global inverse_matrix
-    inverse_matrix = inverse_func(matrix)
-
-    dx = -list_point[len(list_point) - 1][0]
-    dy = -list_point[len(list_point) - 1][1]
-
-    moving_func(dx, dy)
 
     for i in range(len(list_point)):
-        list_point[i] = multiplication(list_point[i], matrix)
+        list_point[i] = multiplication_vector(list_point[i], matrix_res)
         # list_point[i] = np.dot(list_point[i], matrix)
 
-    moving_func(-dx, -dy)
+    inverse_matrix = inverse_func(matrix_res)
 
     print_scene()
 
@@ -216,31 +232,41 @@ def scale():
     xm = entry_xm.get()
     if (check_answer(xm) == False):
         return
-    xm = float_answer(xm)
+    xm = -float_answer(xm)
     if (xm == false):
         return
 
     ym = entry_ym.get()
     if (check_answer(ym) == False):
         return
-    ym = float_answer(ym)
+    ym = -float_answer(ym)
     if (ym == false):
         return
 
-    # print("kx = ", kx, "ky = ", ky, "xm = ", xm, "ym = ", ym)
-
-    # Центр масштабирования???
-    # moving_func(xy)
+    print("kx = ", kx, "ky = ", ky, "xm = ", xm, "ym = ", ym)
 
     matrix = [[kx, 0, 0],
               [0, ky, 0],
               [0, 0, 1]]
 
+    matrix_mov = [[1, 0, 0],
+                  [0, 1, 0],
+                  [xm, ym, 1]]
+
+    matrix_mov_inv = [[1, 0, 0],
+                      [0, 1, 0],
+                      [-xm, -ym, 1]]
+
+    matrix_res = multiplication_matrix(matrix_mov, matrix)
+    matrix_mov[2][0], matrix_mov[2][1] = -xm, -ym
+    matrix_res = multiplication_matrix(matrix_res, matrix_mov_inv)
+
     global inverse_matrix
-    inverse_matrix = inverse_func(matrix)
+    # inverse_matrix = inverse_func(matrix)
+    inverse_matrix = inverse_func(matrix_res)
 
     for i in range(len(list_point)):
-        list_point[i] = multiplication(list_point[i], matrix)
+        list_point[i] = multiplication_vector(list_point[i], matrix_res)
         # list_point[i] = np.dot(list_point[i], matrix)
 
     print_scene()
