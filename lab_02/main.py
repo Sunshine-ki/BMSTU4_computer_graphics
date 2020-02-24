@@ -38,27 +38,43 @@ def multiplication(vector, matrix):
     return vector_res
 
 
+def minor(m, i, j):
+    return m[(i + 1) % 3][(j + 1) % 3] * m[(i + 2) % 3][(j + 2) % 3] - \
+        m[(i + 1) % 3][(j + 2) % 3] * m[(i + 2) % 3][(j + 1) % 3]
+
+
 def transpose(matrix):
     matrix_res = deepcopy(matrix)
 
     for i in range(3):
-        for j in range(3):
+        for j in range(0, i):
             matrix_res[i][j], matrix_res[j][i] = matrix_res[j][i], matrix_res[i][j]
 
     return matrix_res
 
 
 def determinant(m):
-    return m[0][0] * m[1][1] * m[2][2] + \
-        m[0][1] * m[1][2] * m[2][0] + \
-        m[0][2] * m[1][0] * m[2][1] - \
-        m[0][2] * m[1][1] * m[2][0] - \
-        m[0][1] * m[1][0] * m[2][2] - \
-        m[0][0] * m[1][2] * m[2][1]
+    det = 0
+    for i in range(3):
+        det += m[0][i] * minor(m, 0, i)
+
+    return det
 
 
 def inverse_func(matrix):
-    return np.linalg.inv(matrix)
+    matrix_res = transpose(matrix)
+    matrix_copy = deepcopy(matrix_res)
+
+    # Ищем определитель матрицы
+    det = determinant(matrix_res)
+
+    # Ищем алгебраич. доп.
+    for i in range(3):
+        for j in range(3):
+            matrix_res[i][j] = minor(matrix_copy, i, j) / det
+
+    return matrix_res
+    # return np.linalg.inv(matrix)
 
 
 def paint_point(cordinate):
@@ -118,30 +134,6 @@ def float_answer(answer):
     return a
 
 
-def rotation():
-    angle = entry_angle.get()
-    if (check_answer(angle) == False):
-        return
-    angle = float_answer(angle)
-    if (angle == false):
-        return
-
-    # Переводим в радианы.
-    angle *= pi / 180
-    matrix = [[cos(angle), -sin(angle), 0],
-              [sin(angle), cos(angle), 0],
-              [0, 0, 1]]
-
-    global inverse_matrix
-    inverse_matrix = inverse_func(matrix)
-
-    for i in range(len(list_point)):
-        list_point[i] = multiplication(list_point[i], matrix)
-        # list_point[i] = np.dot(list_point[i], matrix)
-
-    print_scene()
-
-
 def moving_func(dx, dy):
     matrix_mov = [[1, 0, 0],
                   [0, 1, 0],
@@ -153,6 +145,37 @@ def moving_func(dx, dy):
     for i in range(len(list_point)):
         list_point[i] = multiplication(list_point[i], matrix_mov)
         # list_point[i] = np.dot(list_point[i], matrix_mov)
+    print_scene()
+
+
+def rotation():
+    angle = entry_angle.get()
+    if (check_answer(angle) == False):
+        return
+    angle = float_answer(angle)
+    if (angle == false):
+        return
+
+    # Переводим в радианы.
+    angle *= pi / 180
+    matrix = [[cos(angle), sin(angle), 0],
+              [-sin(angle), cos(angle), 0],
+              [0, 0, 1]]
+
+    global inverse_matrix
+    inverse_matrix = inverse_func(matrix)
+
+    dx = -list_point[len(list_point) - 1][0]
+    dy = -list_point[len(list_point) - 1][1]
+
+    moving_func(dx, dy)
+
+    for i in range(len(list_point)):
+        list_point[i] = multiplication(list_point[i], matrix)
+        # list_point[i] = np.dot(list_point[i], matrix)
+
+    moving_func(-dx, -dy)
+
     print_scene()
 
 
@@ -238,11 +261,10 @@ def print_scene():
     canv.create_line(win_size/2, win_size, win_size/2, 0, width=2, arrow=LAST)
     canv.create_line(0, win_size/2, win_size, win_size/2, width=2, arrow=LAST)
 
-    paint_point(list_point[0])
-    for i in range(1, len(list_point)):
+    for i in range(len(list_point) - 2):
         paint_point(list_point[i])
-        paint_line(list_point[i], list_point[i - 1])
-    paint_line(list_point[0], list_point[len(list_point) - 1])
+        paint_line(list_point[i], list_point[i + 1])
+    paint_point(list_point[len(list_point) - 1])
 
 
 def create_scene():
@@ -253,6 +275,8 @@ def create_scene():
             list_point.append([x, y, 1])
         except:
             pass
+    list_point.append([0, 0, 1])
+
     print_scene()
 
 
@@ -321,27 +345,6 @@ if __name__ == "__main__":
                                                          y=450, anchor="w", width=100)
     label = Label(root, text="Ym:", bg="lavender").place(x=800,
                                                          y=500, anchor="w", width=100)
-
-    # button_change = Button(text="Изменить точку", width=15,
-    #                        command=change_point, bg="thistle3")
-    # button_change.place(x=1000, y=250, anchor="center")
-    # entry_change_point_of = Entry(root, width="50")
-    # entry_change_point_of.place(x=800, y=300, anchor="w", width=150)
-    # label_change = Label(
-    #     root, text="--->", bg="lavender").place(x=950, y=300, anchor="w", width=100)
-    # entry_change_point_in = Entry(root, width="50")
-    # entry_change_point_in.place(x=1050, y=300, anchor="w", width=150)
-
-    # # label_change = Label(root, text="--->" * 50, bg="lavender").place(x=800, y=300, anchor="w", width=400)
-    # list_box = Listbox(root, width=48, height=17, bg="lavender")
-    # list_box.insert(END, "(x y)")
-    # list_box.place(x=800, y=350)
-    # scroll = Scrollbar(command=list_box.yview)
-    # scroll.place(x=1190, y=350, height=310)
-
-    # button_solve = Button(text="Решить", width=15,
-    #                       command=function_solution, bg="thistle3")
-    # button_solve.place(x=1000, y=700, anchor="center")
 
     button_del_all = Button(text="Шаг назад\n(Можно только 1 раз)", width=15,
                             command=cancel, bg="thistle3")
