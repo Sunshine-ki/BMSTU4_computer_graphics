@@ -161,14 +161,13 @@ def paint_lines():
 
 
 def clear_all():
+    global img
+
     canv.delete(ALL)
 
-    # for x in range(WIDTH):
-    #     for y in range(HEIGHT):
-    #         img.put(color_bg[1], (x, y))
-
-    # canv.create_image((WIDTH/2, HEIGHT/2), image=img, state="normal")
-    # canv.create_text(10, 10, text="Экран 800x800", font="Verdana 12")
+    img = PhotoImage(width=WIDTH, height=HEIGHT)
+    canv.create_image((WIDTH/2, HEIGHT/2), image=img, state="normal")
+    canv.create_text(10, 10, text="Экран 800x800", font="Verdana 12")
 
 
 def time_characteristic():
