@@ -133,7 +133,7 @@ def int_answer(answer):
     try:
         a = int(answer)
     except:
-        print_error("Возможно, у вас некорректный ввод.")
+        print_error("Возможно, у вас вещественное значение или пустой ввод.")
         return false
 
     return a
@@ -143,7 +143,7 @@ def float_answer(answer):
     try:
         a = float(answer)
     except:
-        print_error("Возможно, у вас некорректный ввод.")
+        print_error("Возможно, у вас пустой ввод.")
         return false
 
     return a
@@ -307,7 +307,9 @@ def cancel():
 def print_scene():
     canv.delete(ALL)
     canv.create_line(win_size/2, win_size, win_size/2, 0, width=2, arrow=LAST)
-    canv.create_line(0, win_size/2, win_size, win_size/2, width=2, arrow=LAST)
+    canv.create_line(0, win_size / 2, win_size,
+                     win_size / 2, width=2, arrow=LAST)
+    canv.create_text(10, 10, text="Экран 800x800")
 
     for i in range(len(list_point) - 2 - 8):
         paint_point(list_point[i])
@@ -332,12 +334,12 @@ def print_scene():
 
 def create_scene():
     for i in np.arange(0, 2 * pi * 2, 0.1):
-        try:
-            x = func_x(i)
-            y = func_y(i)
-            list_point.append([x, y, 1])
-        except:
-            pass
+        # try:
+        x = func_x(i)
+        y = func_y(i)
+        list_point.append([x, y, 1])
+        # except:
+        # pass
     list_point.append([0, 0, 1])
 
     list_point.append([-250, 150, 1])
