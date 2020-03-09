@@ -12,7 +12,6 @@ import matplotlib
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-# win_size = 800
 WIDTH, HEIGHT = 800, 800
 
 false = "-"
@@ -113,6 +112,99 @@ def draw_color_background():
     print("color_line = ", color_line)
 
 
+def print_pixel(x, y):
+    img.put(color_line[1], (round(x), round(y)))
+    # (round(x + WIDTH / 2), round(-y + HEIGHT / 2)))
+
+
+def differential_analyzer(start, stop):
+    dx = stop[0] - start[0]
+    dy = stop[1] - start[1]
+
+    if fabs(dx) - fabs(dy) >= 0:
+        l = fabs(dx)
+    else:
+        l = fabs(dy)
+
+    dx, dy = dx / l, dy / l
+    x, y = float(start[0]), float(start[1])
+
+    for _ in range(int(l + 1)):
+        print_pixel(x, y)
+        x += dx
+        y += dy
+
+
+def sign(a):
+    if a == 0:
+        return 0
+    return a / abs(a)
+
+
+def bresenham(start, stop):
+    dx = fabs(stop[0] - start[0])
+    dy = fabs(stop[1] - start[1])
+    x, y = float(start[0]), float(start[1])
+    sx, sy = sign(dx), sign(dy)
+
+    swap = 0
+
+    if dy > dx:
+        swap = 1
+        dx, dy = dy, dx
+
+    m = dy / dx
+    e = m - 0.5
+
+    for _ in range(int(dx + 1)):
+        print_pixel(x, y)
+        # print(x, y)
+
+        if e >= 0:
+            if swap == 0:
+                y += sy
+            else:
+                x += sx
+            e -= 1
+
+        if e < 0:
+            if swap == 0:
+                x += sx
+            else:
+                y += sy
+            e += m
+
+
+def library_method(a, b):
+    # t = win_size / 2
+    # canv.create_line(a[0] + t, -a[1] + t, b[0] + t,
+    #                  -b[1] + t, fill="black", width=3)
+    # , fill="black", width=3)
+    canv.create_line(a[0], a[1], b[0], b[1], fill=color_line[1])
+
+# def bresenham(start, stop):
+#     dx = fabs(stop[0] - start[0])
+#     dy = fabs(stop[1] - start[1])
+
+#     x, y = float(start[0]), float(start[1])
+
+#     f = dx / 2
+
+#     if dx - dy < 0:
+#         dx, dy = dy, dx
+
+#     for _ in range(int(dx + 1)):
+#         print_pixel(x, y)
+#         print(x, y)
+#         temp = f - dy
+#         if temp <= 0:
+#             f = dx + temp
+#             y += 1
+#         x += 1
+
+    # sx, sy = sign(dx), sign(dy)
+
+
 def paint_line():
     if check_answer(entry_start.get()):
         return
@@ -131,11 +223,19 @@ def paint_line():
         print_error("Начало и конец совпадают")
         return
 
-    print("Метод №", var.get(), "От: ", start, "До: ", stop)
+    method = var.get()
 
-    for x in range(4 * WIDTH):
-        y = int(HEIGHT/2 + HEIGHT/4 * sin(x/80.0))
-        img.put(color_line[1], (x//4, y))
+    print("Метод №", method, "От: ", start, "До: ", stop)
+
+    if method == 0:
+        print("Метод ЦДА")
+        differential_analyzer(start, stop)
+    elif method == 1:
+        print("Метод Брезенхема")
+        bresenham(start, stop)
+    elif method == 2:
+        print("Библиотечный метод")
+        library_method(start, stop)
 
 
 def paint_lines():
@@ -158,6 +258,28 @@ def paint_lines():
         return
 
     print("Метод №", var.get(), "Длина: ", length, "Шаг: ", step)
+
+    if 360 % step != 0:
+        print_error("Шаг должен быть кратен 360")
+        return
+
+    method = var.get()
+
+    x, y = length + WIDTH / 2, HEIGHT / 2
+    t = step
+    start = (WIDTH / 2, HEIGHT / 2)
+
+    for _ in range(int(360 / step)):
+        if method == 0:
+            differential_analyzer(start, (int(x), int(y)))
+        elif method == 1:
+            bresenham(start, (int(x), int(y)))
+        elif method == 2:
+            library_method(start, (int(x), int(y)))
+
+        x = length * cos(t * pi / 180) + WIDTH / 2
+        y = -(length * sin(t * pi / 180)) + HEIGHT / 2
+        t += step
 
 
 def clear_all():
@@ -249,11 +371,11 @@ if __name__ == "__main__":
 
     var = IntVar()
     var.set(0)
-    method1 = Radiobutton(text="Метод №1", variable=var,
+    method1 = Radiobutton(text="Метод ЦДА", variable=var,
                           value=0, bg="lavender", width=25, font="Verdana 12")
-    method2 = Radiobutton(text="Метод №2", variable=var,
+    method2 = Radiobutton(text="Метод Брезенхема", variable=var,
                           value=1, bg="lavender", width=25, font="Verdana 12")
-    method3 = Radiobutton(text="Метод №3", variable=var,
+    method3 = Radiobutton(text="Библиотечный метод", variable=var,
                           value=2, bg="lavender", width=25, font="Verdana 12")
     method4 = Radiobutton(text="Метод №4", variable=var,
                           value=3, bg="lavender", width=25, font="Verdana 12")
@@ -268,14 +390,14 @@ if __name__ == "__main__":
 
     # Линия.
 
-    label = Label(root, text="Начальная точка (x, y):", bg="lavender", width=25,
+    label = Label(root, text="Начальная точка (x y):", bg="lavender", width=25,
                   font="Verdana 12")
     label.place(x=800, y=325, anchor="w", width=200)
 
     entry_start = Entry(root, width="50")
     entry_start.place(x=1000, y=325, anchor="w", width=150)
 
-    label = Label(root, text="Конечная точка (x, y):", bg="lavender", width=25,
+    label = Label(root, text="Конечная точка (x y):", bg="lavender", width=25,
                   font="Verdana 12")
     label.place(x=800, y=350, anchor="w", width=200)
 
@@ -309,7 +431,7 @@ if __name__ == "__main__":
     # Цвет линии.
 
     label = Label(root, text="Цвет линии:", bg="lavender", width=25,
-                             font="Verdana 12")
+                  font="Verdana 12")
     label.place(x=800, y=575, anchor="w", width=200)
 
     label_color_line = Label(root, text=" " * 5, bg=color_line[1],
