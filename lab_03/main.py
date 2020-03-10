@@ -153,9 +153,10 @@ def differential_analyzer(start, stop):
     dx, dy = dx / l, dy / l
     x, y = start[0], start[1]
 
+    # print("l = ", l)
     for _ in range(int(l + 1)):
         print_pixel(x, y)
-        # print(x, y)
+        print(x, y)
         x += dx
         y += dy
 
