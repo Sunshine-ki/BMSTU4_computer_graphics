@@ -39,9 +39,15 @@ def print_error(string_error):
 
 def int_answer(answer):
     try:
+        if len(answer.split()) != 1:
+            print_error("У вас больше одного числа")
+            return false
+        if answer == "":
+            print_error("У вас пустой ввод")
+            return false
         a = int(answer)
     except:
-        print_error("Возможно, у вас вещественное значение или пустой ввод.")
+        print_error("Возможно, у вас вещественное значение")
         return false
 
     return a
@@ -49,9 +55,15 @@ def int_answer(answer):
 
 def float_answer(answer):
     try:
+        if len(answer.split()) != 1:
+            print_error("У вас больше одного числа")
+            return false
+        if answer == "":
+            print_error("У вас пустой ввод")
+            return false
         a = float(answer)
     except:
-        print_error("Возможно, у вас пустой ввод.")
+        print_error("Ошибка ввода")
         return false
 
     return a
@@ -59,11 +71,14 @@ def float_answer(answer):
 
 def get_two_answer(answer):
     try:
-        a, b = map(float, answer.split())
-    except:
-        print_error("Вы неправильно ввели координаты точки. \
+        if len(answer.split()) != 2:
+            print_error("Вы неправильно ввели координаты точки. \
 Напоминаю, что точка задается двумя \
 координатами x и y, разделённых пробелом.")
+            return false, false
+        a, b = map(int, answer.split())
+    except:
+        print_error("Координаты должны быть целого типа")
         return false, false
     return (a, b)
 
@@ -74,7 +89,7 @@ def check_answer(answer):
         print_error("У вас пустое поле ввода")
         return 1
 
-    correct = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " ", ".", "-"]
+    correct = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " ", "-", "."]
 
     for i in answer:
         if i not in correct:
@@ -120,7 +135,9 @@ def draw_color_background():
 
 
 def print_pixel(x, y):
-    img.put(color_line[1], (round(x), round(y)))
+    canv.create_line(round(x), round(y), round(
+        x), round(y) + 1, width=1, fill=color_line[1])
+    # img.put(color_line[1], (round(x), round(y)))
     # (round(x + WIDTH / 2), round(-y + HEIGHT / 2)))
 
 
@@ -134,11 +151,11 @@ def differential_analyzer(start, stop):
         l = fabs(dy)
 
     dx, dy = dx / l, dy / l
-    x, y = float(start[0]), float(start[1])
+    x, y = start[0], start[1]
 
     for _ in range(int(l + 1)):
         print_pixel(x, y)
-        print(x, y)
+        # print(x, y)
         x += dx
         y += dy
 
@@ -149,10 +166,10 @@ def sign(a):
     return a / abs(a)
 
 
-def bresenham(start, stop):
+def bresenham_float(start, stop):
     dx = stop[0] - start[0]
     dy = stop[1] - start[1]
-    x, y = float(start[0]), float(start[1])
+    x, y = start[0], start[1]
     sx, sy = sign(dx), sign(dy)
     dx = fabs(dx)
     dy = fabs(dy)
@@ -168,7 +185,43 @@ def bresenham(start, stop):
 
     for _ in range(int(dx + 1)):
         print_pixel(x, y)
-        print(x, y)
+        # print(x, y)
+
+        if e >= 0:
+            if swap == 0:
+                y += sy
+            else:
+                x += sx
+            e -= 1
+
+        if e < 0:
+            if swap == 0:
+                x += sx
+            else:
+                y += sy
+            e += m
+
+
+def bresenham_int(start, stop):
+    dx = stop[0] - start[0]
+    dy = stop[1] - start[1]
+    x, y = start[0], start[1]
+    sx, sy = sign(dx), sign(dy)
+    dx = fabs(dx)
+    dy = fabs(dy)
+
+    swap = 0
+
+    if dy > dx:
+        swap = 1
+        dx, dy = dy, dx
+
+    m = dy / dx
+    e = m - 0.5
+
+    for _ in range(int(dx + 1)):
+        print_pixel(x, y)
+        # print(x, y)
 
         if e >= 0:
             if swap == 0:
@@ -192,28 +245,6 @@ def library_method(a, b):
     # , fill="black", width=3)
     canv.create_line(a[0], a[1], b[0], b[1], fill=color_line[1])
 
-# def bresenham(start, stop):
-#     dx = fabs(stop[0] - start[0])
-#     dy = fabs(stop[1] - start[1])
-
-#     x, y = float(start[0]), float(start[1])
-
-#     f = dx / 2
-
-#     if dx - dy < 0:
-#         dx, dy = dy, dx
-
-#     for _ in range(int(dx + 1)):
-#         print_pixel(x, y)
-#         print(x, y)
-#         temp = f - dy
-#         if temp <= 0:
-#             f = dx + temp
-#             y += 1
-#         x += 1
-
-    # sx, sy = sign(dx), sign(dy)
-
 
 def paint_line():
     if check_answer(entry_start.get()):
@@ -234,7 +265,7 @@ def paint_line():
         return
 
     method = var.get()
-    t1 = 0
+    # t1 = 0
 
     print("Метод №", method, "От: ", start, "До: ", stop)
 
@@ -244,10 +275,13 @@ def paint_line():
         differential_analyzer(start, stop)
         # time_list[0] = round(time() - t1, 6)
     elif method == 1:
-        print("Метод Брезенхема")
+        print("Метод Брезенхема (float)")
         # t1 = time()
-        bresenham(start, stop)
+        bresenham_float(start, stop)
         # time_list[1] = round(time() - t1, 6)
+    elif method == 2:
+        print("Метод Брезенхема (int)")
+        bresenham_int(start, stop)
     elif method == 4:
         print("Библиотечный метод")
         # t1 = time()
@@ -262,7 +296,7 @@ def paint_lines():
     if check_answer(entry_step.get()):
         return
 
-    length = float_answer(entry_length.get())  # Float ?
+    length = int_answer(entry_length.get())
     if length == false:
         return
 
@@ -290,7 +324,7 @@ def paint_lines():
         if method == 0:
             differential_analyzer(start, (int(x), int(y)))
         elif method == 1:
-            bresenham(start, (int(x), int(y)))
+            bresenham_float(start, (int(x), int(y)))
         elif method == 4:
             library_method(start, (int(x), int(y)))
 
@@ -300,12 +334,12 @@ def paint_lines():
 
 
 def clear_all():
-    global img
+    # global img
 
     canv.delete(ALL)
 
-    img = PhotoImage(width=WIDTH, height=HEIGHT)
-    canv.create_image((WIDTH/2, HEIGHT/2), image=img, state="normal")
+    # img = PhotoImage(width=WIDTH, height=HEIGHT)
+    # canv.create_image((WIDTH/2, HEIGHT/2), image=img, state="normal")
     canv.create_text(10, 10, text="Экран 800x800", font="Verdana 12")
 
 
@@ -349,7 +383,7 @@ def time_characteristic(entry_start_q, entry_stop_q, window_question):
 
     # Метод Брезенхема.
     t1 = time()
-    bresenham(start, stop)
+    bresenham_float(start, stop)
     time_list[1] = round(time() - t1, 6)
 
     # Библиотечный метод.
@@ -375,7 +409,7 @@ def time_characteristic(entry_start_q, entry_stop_q, window_question):
     ax.set_ylabel('Время (t) [секунды]')
 
     ind = ("ЦДА", "Брезенхем\n(int)", "Брезенхем\n(float)",
-           "Брезенхем\n(сглаживание)", "Библиотченый")  # np.arange(len(time_list))  # [0, 1, ... , len(data_lst) - 1]
+           "Брезенхем\n(сглаживание)", "Библиотечный")  # np.arange(len(time_list))  # [0, 1, ... , len(data_lst) - 1]
     ax.bar(ind, time_list, 0.4)
 
     canvas = FigureCanvasTkAgg(fig, master=window)
@@ -452,8 +486,8 @@ if __name__ == "__main__":
     canv = Canvas(root, width=WIDTH, height=HEIGHT, bg="white")
     canv.place(x=0, y=0)
 
-    img = PhotoImage(width=WIDTH, height=HEIGHT)
-    canv.create_image((WIDTH/2, HEIGHT/2), image=img, state="normal")
+    # img = PhotoImage(width=WIDTH, height=HEIGHT)
+    # canv.create_image((WIDTH/2, HEIGHT/2), image=img, state="normal")
     canv.create_text(10, 10, text="Экран 800x800", font="Verdana 12")
 
     # Цвета.
@@ -476,9 +510,9 @@ if __name__ == "__main__":
     var.set(0)
     method1 = Radiobutton(text="Метод ЦДА", variable=var,
                           value=0, bg="lavender", width=25, font="Verdana 12")
-    method2 = Radiobutton(text="Метод Брезенхема", variable=var,
+    method2 = Radiobutton(text="Метод Брезенхема (float)", variable=var,
                           value=1, bg="lavender", width=25, font="Verdana 12")
-    method3 = Radiobutton(text="  ", variable=var,
+    method3 = Radiobutton(text="Метод Брезенхема (int)", variable=var,
                           value=2, bg="lavender", width=25, font="Verdana 12")
     method4 = Radiobutton(text="  ", variable=var,
                           value=3, bg="lavender", width=25, font="Verdana 12")
