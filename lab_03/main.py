@@ -216,8 +216,8 @@ def bresenham_int(start, stop):
         swap = 1
         dx, dy = dy, dx
 
-    m = dy / dx
-    e = m - 0.5
+    # m = dy / dx
+    e = 2 * dy - dx
 
     for _ in range(int(dx + 1)):
         print_pixel(x, y)
@@ -228,14 +228,14 @@ def bresenham_int(start, stop):
                 y += sy
             else:
                 x += sx
-            e -= 1
+            e -= (2 * dx)
 
         if e < 0:
             if swap == 0:
                 x += sx
             else:
                 y += sy
-            e += m
+            e += (2 * dy)
 
 
 def library_method(a, b):
@@ -325,6 +325,8 @@ def paint_lines():
             differential_analyzer(start, (int(x), int(y)))
         elif method == 1:
             bresenham_float(start, (int(x), int(y)))
+        elif method == 2:
+            bresenham_int(start, (int(x), int(y)))
         elif method == 4:
             library_method(start, (int(x), int(y)))
 
@@ -381,10 +383,15 @@ def time_characteristic(entry_start_q, entry_stop_q, window_question):
     differential_analyzer(start, stop)
     time_list[0] = round(time() - t1, 6)
 
-    # Метод Брезенхема.
+    # Метод Брезенхема. (float)
     t1 = time()
     bresenham_float(start, stop)
     time_list[1] = round(time() - t1, 6)
+
+    # Метод Брезенхема. (int)
+    t1 = time()
+    bresenham_int(start, stop)
+    time_list[2] = round(time() - t1, 6)
 
     # Библиотечный метод.
     t1 = time()
@@ -408,7 +415,7 @@ def time_characteristic(entry_start_q, entry_stop_q, window_question):
     # ax.set_xlabel('ось абцис (XAxis)')
     ax.set_ylabel('Время (t) [секунды]')
 
-    ind = ("ЦДА", "Брезенхем\n(int)", "Брезенхем\n(float)",
+    ind = ("ЦДА", "Брезенхем\n(float)", "Брезенхем\n(int)",
            "Брезенхем\n(сглаживание)", "Библиотечный")  # np.arange(len(time_list))  # [0, 1, ... , len(data_lst) - 1]
     ax.bar(ind, time_list, 0.4)
 
