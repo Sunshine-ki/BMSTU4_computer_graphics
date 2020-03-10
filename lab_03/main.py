@@ -6,6 +6,7 @@ from tkinter import scrolledtext as tkst
 from tkinter import messagebox as mb
 from tkinter import colorchooser
 
+from time import *
 from math import *
 import numpy as np
 import matplotlib
@@ -17,6 +18,12 @@ WIDTH, HEIGHT = 800, 800
 false = "-"
 color_line = ((0.0, 0.0, 0.0), '#000000')
 color_bg = ((255, 255, 255), '#ffffff')
+
+# ЦДА
+# Брезенхем (int)
+# Брезенхем (float)
+# Брезенхем (сглаживание)
+# Библиотченый
 
 
 def info_show():
@@ -131,6 +138,7 @@ def differential_analyzer(start, stop):
 
     for _ in range(int(l + 1)):
         print_pixel(x, y)
+        print(x, y)
         x += dx
         y += dy
 
@@ -142,10 +150,12 @@ def sign(a):
 
 
 def bresenham(start, stop):
-    dx = fabs(stop[0] - start[0])
-    dy = fabs(stop[1] - start[1])
+    dx = stop[0] - start[0]
+    dy = stop[1] - start[1]
     x, y = float(start[0]), float(start[1])
     sx, sy = sign(dx), sign(dy)
+    dx = fabs(dx)
+    dy = fabs(dy)
 
     swap = 0
 
@@ -158,7 +168,7 @@ def bresenham(start, stop):
 
     for _ in range(int(dx + 1)):
         print_pixel(x, y)
-        # print(x, y)
+        print(x, y)
 
         if e >= 0:
             if swap == 0:
@@ -224,18 +234,25 @@ def paint_line():
         return
 
     method = var.get()
+    t1 = 0
 
     print("Метод №", method, "От: ", start, "До: ", stop)
 
     if method == 0:
         print("Метод ЦДА")
+        # t1 = time()
         differential_analyzer(start, stop)
+        # time_list[0] = round(time() - t1, 6)
     elif method == 1:
         print("Метод Брезенхема")
+        # t1 = time()
         bresenham(start, stop)
-    elif method == 2:
+        # time_list[1] = round(time() - t1, 6)
+    elif method == 4:
         print("Библиотечный метод")
+        # t1 = time()
         library_method(start, stop)
+        # time_list[2] = round(time() - t1, 6)
 
 
 def paint_lines():
@@ -274,7 +291,7 @@ def paint_lines():
             differential_analyzer(start, (int(x), int(y)))
         elif method == 1:
             bresenham(start, (int(x), int(y)))
-        elif method == 2:
+        elif method == 4:
             library_method(start, (int(x), int(y)))
 
         x = length * cos(t * pi / 180) + WIDTH / 2
@@ -292,13 +309,59 @@ def clear_all():
     canv.create_text(10, 10, text="Экран 800x800", font="Verdana 12")
 
 
-def time_characteristic():
-    window = Tk()
-    window.geometry('700x700')
-    window.title('Времянные характеристики')
+def close_windows():
+    pass
 
-    data_lst = [31, 41, 59, 26, 53, 58, 97]
-    # data_lst.sort()
+
+def time_characteristic(entry_start_q, entry_stop_q, window_question):
+    if check_answer(entry_start_q.get()):
+        # window_question.destroy()
+        return
+
+    start = get_two_answer(entry_start_q.get())
+    if start[0] == false:
+        # window_question.destroy()
+        return
+
+    if check_answer(entry_stop_q.get()):
+        # window_question.destroy()
+        return
+    stop = get_two_answer(entry_stop_q.get())
+    if stop[0] == false:
+        # window_question.destroy()
+        return
+
+    if (start == stop):
+        print_error("Начало и конец совпадают")
+        # window_question.destroy()
+        return
+
+    print(start, stop)
+
+    window_question.destroy()
+
+    time_list = [0, 0, 0, 0, 0]
+
+    # Метод ЦДА.
+    t1 = time()
+    differential_analyzer(start, stop)
+    time_list[0] = round(time() - t1, 6)
+
+    # Метод Брезенхема.
+    t1 = time()
+    bresenham(start, stop)
+    time_list[1] = round(time() - t1, 6)
+
+    # Библиотечный метод.
+    t1 = time()
+    library_method(start, stop)
+    time_list[4] = round(time() - t1, 6)
+
+    # print(time_list)
+
+    window = Tk()
+    window.geometry('750x750')
+    window.title('Времянные характеристики')
 
     fig = Figure(figsize=(10, 10))  # , dpi=100)
     # Оси (1 строка. 1 столбец) axes
@@ -309,16 +372,56 @@ def time_characteristic():
     # ax.set_ylim([-2, 2])
     # ax.set_title('Основы анатомии matplotlib')
     # ax.set_xlabel('ось абцис (XAxis)')
-    # ax.set_ylabel('ось ординат (YAxis)')
+    ax.set_ylabel('Время (t) [секунды]')
 
-    ind = np.arange(len(data_lst))  # [0, 1, ... , len(data_lst) - 1]
-    ax.bar(ind, data_lst, 0.8)
+    ind = ("ЦДА", "Брезенхем\n(int)", "Брезенхем\n(float)",
+           "Брезенхем\n(сглаживание)", "Библиотченый")  # np.arange(len(time_list))  # [0, 1, ... , len(data_lst) - 1]
+    ax.bar(ind, time_list, 0.4)
 
     canvas = FigureCanvasTkAgg(fig, master=window)
     canvas.draw()
     canvas.get_tk_widget().pack(side=RIGHT)
 
     window.mainloop()
+
+
+def time_characteristic_question():
+    # list_method = ("ЦДА\n", "Брезенхем (int)\n", "Брезенхем (float)\n",
+    #                "Брезенхем (сглаживание)\n", "Библиотченый\n")
+    # str_err = "Недостаточно данных. Вы не использовали:\n"
+    # flag = 0
+    # for i in range(len(time_list)):
+    #     if time_list[i] == -1:
+    #         flag = 1
+    #         str_err += list_method[i]
+    # if flag:
+    #     print_error(str_err + "")
+    #     return
+    window_question = Tk()
+    window_question.geometry('300x250')
+    window_question.configure(bg="lavender")
+    window_question.title('Ввод')
+
+    label = Label(window_question, text="Начальная точка (x y):", bg="lavender", width=25,
+                  font="Verdana 12")
+    label.place(x=150, y=10, anchor="center", width=200)
+
+    entry_start_q = Entry(window_question, width=50)
+    entry_start_q.place(x=150, y=50, anchor="center", width=150)
+
+    label = Label(window_question, text="Конечная точка (x y):", bg="lavender", width=25,
+                  font="Verdana 12")
+    label.place(x=150, y=100, anchor="center", width=200)
+
+    entry_stop_q = Entry(window_question, width=50)
+    entry_stop_q.place(x=150, y=150, anchor="center", width=150)
+
+    button = Button(window_question, text="Сравнить",
+                    command=lambda arg1=entry_start_q, arg2=entry_stop_q,
+                    arg3=window_question: time_characteristic(arg1, arg2, arg3),  bg="thistle3")
+    button.place(x=200, y=200, anchor="e")
+
+    window_question.mainloop()
 
 
 def step_characteristic():
@@ -375,11 +478,11 @@ if __name__ == "__main__":
                           value=0, bg="lavender", width=25, font="Verdana 12")
     method2 = Radiobutton(text="Метод Брезенхема", variable=var,
                           value=1, bg="lavender", width=25, font="Verdana 12")
-    method3 = Radiobutton(text="Библиотечный метод", variable=var,
+    method3 = Radiobutton(text="  ", variable=var,
                           value=2, bg="lavender", width=25, font="Verdana 12")
-    method4 = Radiobutton(text="Метод №4", variable=var,
+    method4 = Radiobutton(text="  ", variable=var,
                           value=3, bg="lavender", width=25, font="Verdana 12")
-    method5 = Radiobutton(text="Метод №5", variable=var,
+    method5 = Radiobutton(text="Библиотечный метод", variable=var,
                           value=4, bg="lavender", width=25, font="Verdana 12")
 
     method1.place(x=1000, y=175, anchor="center")
@@ -451,7 +554,7 @@ if __name__ == "__main__":
     # Временная характеристика.
 
     button = Button(text="Показать времянные характеристики", width=40,
-                    command=time_characteristic,  bg="thistle3")
+                    command=time_characteristic_question,  bg="thistle3")
     button.place(x=1000, y=650, anchor="center")
 
     # Ступенчатость.
