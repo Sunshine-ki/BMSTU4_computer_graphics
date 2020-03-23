@@ -289,6 +289,12 @@ def paint_line():
         library_method(start, stop)
         # time_list[2] = round(time() - t1, 6)
 
+    canv.create_line(round(start[0]), round(start[1]), round(
+        start[0]), round(start[1]) + 1, width=1, fill="red")
+
+    canv.create_line(round(stop[0]), round(stop[1]), round(
+        stop[0]), round(stop[1]) + 1, width=1, fill="red")
+
 
 def paint_lines():
     if check_answer(entry_length.get()):
@@ -305,7 +311,7 @@ def paint_lines():
         print_error("Длина не может быть отрицательной")
         return
 
-    step = float_answer(entry_step.get())  # Float ?
+    step = int_answer(entry_step.get())  # Float ?
     if step == false:
         return
 
@@ -330,6 +336,7 @@ def paint_lines():
             bresenham_int(start, (int(x), int(y)))
         elif method == 4:
             library_method(start, (int(x), int(y)))
+        print(x, y)
 
         x = length * cos(t * pi / 180) + WIDTH / 2
         y = -(length * sin(t * pi / 180)) + HEIGHT / 2
