@@ -134,6 +134,40 @@ def draw_color_background():
     print("color_line = ", color_line)
 
 
+def parse_color(color):
+    color_str = "#"
+    print("color = ", color)
+    for i in range(3):
+        temp = hex(int(color[i]))
+        print("temp = ", temp)
+        temp = temp[2:]
+
+        if int(temp, base=16) <= 15:
+            temp = "0" + temp
+        color_str += str(temp)
+    return color_str
+
+
+def print_pixel_color(x, y, intensity):
+    # if intensity ==
+    global color_line
+    intensity_color = list(color_line[0])
+    print("intensity_color = ", intensity_color)
+    print("intensity = ", intensity)
+    for i in range(3):
+        if fabs(round(intensity_color[i]) - 256) < 2:
+            continue
+
+        intensity_color[i] = (255 - intensity_color[i]) * intensity
+
+    # print("real = ", color_line[1])
+    # print("intensity_color = ", intensity_color)
+    # print("parse_color(intensity_color) = ", parse_color(intensity_color))
+
+    canv.create_line(round(x), round(y), round(
+        x), round(y) + 1, width=1, fill=parse_color(intensity_color))
+
+
 def print_pixel(x, y):
     canv.create_line(round(x), round(y), round(
         x), round(y) + 1, width=1, fill=color_line[1])
@@ -176,18 +210,14 @@ def bresenham_float(start, stop):
     dy = fabs(dy)
 
     swap = 0
-
     if dy > dx:
         swap = 1
         dx, dy = dy, dx
-
     m = dy / dx
     e = m - 0.5
 
     for _ in range(int(dx + 1)):
         print_pixel(x, y)
-        # print(x, y)
-
         if e >= 0:
             if swap == 0:
                 y += sy
@@ -195,12 +225,11 @@ def bresenham_float(start, stop):
                 x += sx
             e -= 1
 
-        if e < 0:
-            if swap == 0:
-                x += sx
-            else:
-                y += sy
-            e += m
+        if swap == 0:
+            x += sx
+        else:
+            y += sy
+        e += m
 
 
 def bresenham_int(start, stop):
@@ -222,7 +251,7 @@ def bresenham_int(start, stop):
 
     for _ in range(int(dx + 1)):
         print_pixel(x, y)
-        # print(x, y)
+        # print(e, x, y)
 
         if e >= 0:
             if swap == 0:
@@ -239,11 +268,45 @@ def bresenham_int(start, stop):
             e += (2 * dy)
 
 
+def bresenham_smooth(start, stop):
+    dx = stop[0] - start[0]
+    dy = stop[1] - start[1]
+    x, y = start[0], start[1]
+    sx, sy = sign(dx), sign(dy)
+    dx = fabs(dx)
+    dy = fabs(dy)
+
+    swap = 0
+    if dy > dx:
+        swap = 1
+        dx, dy = dy, dx
+    m = dy / dx
+    e = 0.5
+
+    for _ in range(int(dx + 1)):
+        # print("Err = ", e)
+        if e >= 1:
+            if swap == 0:
+                y += sy
+            else:
+                x += sx
+            e -= 1
+
+        print_pixel_color(x, y, fabs(e))
+
+        if swap == 0:
+            x += sx
+        else:
+            y += sy
+        e += m
+
+
 def library_method(a, b):
     # t = win_size / 2
     # canv.create_line(a[0] + t, -a[1] + t, b[0] + t,
     #                  -b[1] + t, fill="black", width=3)
     # , fill="black", width=3)
+    # global canv
     canv.create_line(a[0], a[1], b[0], b[1], fill=color_line[1])
 
 
@@ -283,6 +346,9 @@ def paint_line():
     elif method == 2:
         print("Метод Брезенхема (int)")
         bresenham_int(start, stop)
+    elif method == 3:
+        print("Метод Брезенхема (Сглаживаение)")
+        bresenham_smooth(start, stop)
     elif method == 4:
         print("Библиотечный метод")
         # t1 = time()
@@ -329,13 +395,16 @@ def paint_lines():
 
     for _ in range(int(360 / step)):
         if method == 0:
-            differential_analyzer(start, (int(x), int(y)))
+            differential_analyzer(start, (round(x), round(y)))
         elif method == 1:
-            bresenham_float(start, (int(x), int(y)))
+            bresenham_float(start, (round(x), round(y)))
         elif method == 2:
-            bresenham_int(start, (int(x), int(y)))
+            bresenham_int(start, (round(x), round(y)))
+        elif method == 3:
+            print(start, (round(x), round(y)))
+            bresenham_smooth(start, (round(x), round(y)))
         elif method == 4:
-            library_method(start, (int(x), int(y)))
+            library_method(start, (round(x), round(y)))
         print(x, y)
 
         x = length * cos(t * pi / 180) + WIDTH / 2
@@ -529,7 +598,7 @@ if __name__ == "__main__":
                           value=1, bg="lavender", width=25, font="Verdana 12")
     method3 = Radiobutton(text="Метод Брезенхема (int)", variable=var,
                           value=2, bg="lavender", width=25, font="Verdana 12")
-    method4 = Radiobutton(text="  ", variable=var,
+    method4 = Radiobutton(text="Брезенхем (Сглаживаение)", variable=var,
                           value=3, bg="lavender", width=25, font="Verdana 12")
     method5 = Radiobutton(text="Библиотечный метод", variable=var,
                           value=4, bg="lavender", width=25, font="Verdana 12")
