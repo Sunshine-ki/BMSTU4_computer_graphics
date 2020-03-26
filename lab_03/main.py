@@ -19,12 +19,6 @@ false = "-"
 color_line = ((0.0, 0.0, 0.0), '#000000')
 color_bg = ((255, 255, 255), '#ffffff')
 
-# ЦДА
-# Брезенхем (int)
-# Брезенхем (float)
-# Брезенхем (сглаживание)
-# Библиотченый
-
 
 def info_show():
     info = Toplevel(root)
@@ -136,10 +130,10 @@ def draw_color_background():
 
 def parse_color(color):
     color_str = "#"
-    print("color = ", color)
+    # print("color = ", color)
     for i in range(3):
         temp = hex(int(color[i]))
-        print("temp = ", temp)
+        # print("temp = ", temp)
         temp = temp[2:]
 
         if int(temp, base=16) <= 15:
@@ -151,9 +145,10 @@ def parse_color(color):
 def print_pixel_color(x, y, intensity):
     # if intensity ==
     global color_line
+    intensity = fabs(intensity)
     intensity_color = list(color_line[0])
-    print("intensity_color = ", intensity_color)
-    print("intensity = ", intensity)
+    # print("intensity_color = ", intensity_color)
+    # print("intensity = ", intensity)
     for i in range(3):
         if fabs(round(intensity_color[i]) - 256) < 2:
             continue
@@ -190,7 +185,7 @@ def differential_analyzer(start, stop):
     # print("l = ", l)
     for _ in range(int(l + 1)):
         print_pixel(x, y)
-        print(x, y)
+        # print(x, y)
         x += dx
         y += dy
 
@@ -284,16 +279,51 @@ def bresenham_smooth(start, stop):
     e = 0.5
 
     for _ in range(int(dx + 1)):
-        # print("Err = ", e)
+        print_pixel_color(x, y, 1 - e)
+
         if e >= 1:
             if swap == 0:
                 y += sy
             else:
                 x += sx
             e -= 1
+        if swap == 0:
+            x += sx
+        else:
+            y += sy
+        e += m
 
-        print_pixel_color(x, y, fabs(e))
 
+def vu(start, stop):
+    dx = stop[0] - start[0]
+    dy = stop[1] - start[1]
+    x, y = start[0], start[1]
+    sx, sy = sign(dx), sign(dy)
+    dx = fabs(dx)
+    dy = fabs(dy)
+
+    swap = 0
+    if dy > dx:
+        swap = 1
+        dx, dy = dy, dx
+    m = dy / dx
+    e = 0.5
+    w = 1
+
+    for _ in range(int(dx + 1)):
+        if swap == 0:
+            print_pixel_color(x, y, - e)
+            print_pixel_color(x, y + sy, e - 1)
+        else:
+            print_pixel_color(x, y, e)
+            print_pixel_color(x + sx, y, e - 1)
+
+        if e >= w - m:
+            if swap == 0:
+                y += sy
+            else:
+                x += sx
+            e -= 1
         if swap == 0:
             x += sx
         else:
@@ -351,10 +381,10 @@ def paint_line():
         bresenham_smooth(start, stop)
     elif method == 4:
         print("Библиотечный метод")
-        # t1 = time()
         library_method(start, stop)
-        # time_list[2] = round(time() - t1, 6)
-
+    elif method == 5:
+        print("Метод ВУ")
+        vu(start, stop)
     canv.create_line(round(start[0]), round(start[1]), round(
         start[0]), round(start[1]) + 1, width=1, fill="red")
 
@@ -381,7 +411,7 @@ def paint_lines():
     if step == false:
         return
 
-    print("Метод №", var.get(), "Длина: ", length, "Шаг: ", step)
+    # print("Метод №", var.get(), "Длина: ", length, "Шаг: ", step)
 
     if 360 % step != 0:
         print_error("Шаг должен быть кратен 360")
@@ -401,10 +431,12 @@ def paint_lines():
         elif method == 2:
             bresenham_int(start, (round(x), round(y)))
         elif method == 3:
-            print(start, (round(x), round(y)))
+            # print(start, (round(x), round(y)))
             bresenham_smooth(start, (round(x), round(y)))
         elif method == 4:
             library_method(start, (round(x), round(y)))
+        elif method == 5:
+            vu(start, (round(x), round(y)))
         print(x, y)
 
         x = length * cos(t * pi / 180) + WIDTH / 2
@@ -449,33 +481,49 @@ def time_characteristic(entry_start_q, entry_stop_q, window_question):
         # window_question.destroy()
         return
 
-    print(start, stop)
+    # print(start, stop)
 
     window_question.destroy()
 
-    time_list = [0, 0, 0, 0, 0]
+    time_list = [0, 0, 0, 0, 0, 0]
 
     # Метод ЦДА.
     t1 = time()
-    differential_analyzer(start, stop)
+    for _ in range(30):
+        differential_analyzer(start, stop)
     time_list[0] = round(time() - t1, 6)
 
     # Метод Брезенхема. (float)
     t1 = time()
-    bresenham_float(start, stop)
+    for _ in range(30):
+        bresenham_float(start, stop)
     time_list[1] = round(time() - t1, 6)
 
     # Метод Брезенхема. (int)
     t1 = time()
-    bresenham_int(start, stop)
+    for _ in range(30):
+        bresenham_int(start, stop)
     time_list[2] = round(time() - t1, 6)
+
+    # Метод Брезенхема. (сглаживание)
+    t1 = time()
+    for _ in range(30):
+        bresenham_smooth(start, stop)
+    time_list[3] = round(time() - t1, 6)
 
     # Библиотечный метод.
     t1 = time()
-    library_method(start, stop)
+    for _ in range(30):
+        library_method(start, stop)
     time_list[4] = round(time() - t1, 6)
 
-    # print(time_list)
+    # ВУ.
+    t1 = time()
+    for _ in range(30):
+        vu(start, stop)
+    time_list[5] = round(time() - t1, 6)
+
+    print(time_list)
 
     window = Tk()
     window.geometry('750x750')
@@ -493,7 +541,7 @@ def time_characteristic(entry_start_q, entry_stop_q, window_question):
     ax.set_ylabel('Время (t) [секунды]')
 
     ind = ("ЦДА", "Брезенхем\n(float)", "Брезенхем\n(int)",
-           "Брезенхем\n(сглаживание)", "Библиотечный")  # np.arange(len(time_list))  # [0, 1, ... , len(data_lst) - 1]
+           "Брезенхем\n(сглаживание)", "Библиотечный", "ВУ")  # np.arange(len(time_list))  # [0, 1, ... , len(data_lst) - 1]
     ax.bar(ind, time_list, 0.4)
 
     canvas = FigureCanvasTkAgg(fig, master=window)
@@ -576,9 +624,9 @@ if __name__ == "__main__":
 
     # Цвета.
 
-    button = Button(text="Выбрать цвет фона", width=40,
-                    command=choose_color_background,  bg="thistle3")
-    button.place(x=1000, y=25, anchor="center")
+    # button = Button(text="Выбрать цвет фона", width=40,
+    #                 command=choose_color_background,  bg="thistle3")
+    # button.place(x=1000, y=25, anchor="center")
 
     button = Button(text="Выбрать цвет отрезка", width=40,
                     command=choose_color_line,  bg="thistle3")
@@ -602,12 +650,15 @@ if __name__ == "__main__":
                           value=3, bg="lavender", width=25, font="Verdana 12")
     method5 = Radiobutton(text="Библиотечный метод", variable=var,
                           value=4, bg="lavender", width=25, font="Verdana 12")
+    method6 = Radiobutton(text="Метод ВУ", variable=var,
+                          value=5, bg="lavender", width=25, font="Verdana 12")
 
     method1.place(x=1000, y=175, anchor="center")
     method2.place(x=1000, y=200, anchor="center")
     method3.place(x=1000, y=225, anchor="center")
     method4.place(x=1000, y=250, anchor="center")
-    method5.place(x=1000, y=275, anchor="center")
+    method6.place(x=1000, y=275, anchor="center")
+    method5.place(x=1000, y=300, anchor="center")
 
     # Линия.
 
@@ -661,13 +712,13 @@ if __name__ == "__main__":
 
     # Цвет фона.
 
-    label = Label(root, text="Цвет фона:", bg="lavender", width=25,
-                  font="Verdana 12")
-    label.place(x=800, y=610, anchor="w", width=200)
+    # label = Label(root, text="Цвет фона:", bg="lavender", width=25,
+    #               font="Verdana 12")
+    # label.place(x=800, y=610, anchor="w", width=200)
 
-    label_color_bg = Label(root, text=" " * 5, bg=color_bg[1],
-                           font="Verdana 12")
-    label_color_bg.place(x=1000, y=610, anchor="w", width=100)
+    # label_color_bg = Label(root, text=" " * 5, bg=color_bg[1],
+    #                        font="Verdana 12")
+    # label_color_bg.place(x=1000, y=610, anchor="w", width=100)
 
     # Временная характеристика.
 
@@ -677,9 +728,9 @@ if __name__ == "__main__":
 
     # Ступенчатость.
 
-    button = Button(text="Исследование ступенчатости", width=40,
-                    command=step_characteristic,  bg="thistle3")
-    button.place(x=1000, y=700, anchor="center")
+    # button = Button(text="Исследование ступенчатости", width=40,
+    #                 command=step_characteristic,  bg="thistle3")
+    # button.place(x=1000, y=700, anchor="center")
 
     # Очистка экрана.
 
