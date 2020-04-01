@@ -181,6 +181,7 @@ def differential_analyzer(start, stop):
 
     dx, dy = dx / l, dy / l
     x, y = start[0], start[1]
+    print("dx, dy", dx, dy)
 
     # print("l = ", l)
     for _ in range(int(l + 1)):
