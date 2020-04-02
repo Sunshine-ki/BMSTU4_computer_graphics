@@ -3,9 +3,6 @@ from math import *
 
 from draw import *
 
-# def canonical_circle(canvas, center, radius, color_line):
-# pass
-
 
 def parametric_circle(center, radius):
     list_points = list()
@@ -22,17 +19,17 @@ def parametric_circle(center, radius):
     return list_points
 
 
-def draw_circle(canvas, method, center, radius, color_line):
+def draw_circle(canvas_class, method, center, radius):
     # print("method = ", method)
     # print("center = ", center)
     # print("radius = ", radius)
-    print("color_line = ", color_line)
+    print("color_line = ", canvas_class.color_line)
 
     list_points = list()
 
     if method == 0:
         print("Канонический")
-        # canonical_circle(canvas, center, radius, color_line)
+        # canonical_circle(center, radius)
     elif method == 1:
         print("Параметрический")
         list_points = parametric_circle(center, radius)
@@ -42,7 +39,7 @@ def draw_circle(canvas, method, center, radius, color_line):
         pass
     elif method == 4:
         print("Библиотечный")
-        canvas.create_oval(center[0] - radius, center[1] - radius,
-                           center[0] + radius, center[1] + radius, outline=color_line[1])
+        canvas_class.draw_oval(
+            center[0] - radius, center[1] - radius, center[0] + radius, center[1] + radius)
 
-    draw_figure(canvas, color_line, list_points)
+    canvas_class.draw_figure(list_points)

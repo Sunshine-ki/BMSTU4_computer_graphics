@@ -1,20 +1,9 @@
 from tkinter import *
-from tkinter import colorchooser
 from tkinter import messagebox as mb
 
 
 def print_error(string_error):
     mb.showerror(title="Ошибка", message=string_error)
-
-
-def choose_color_line(color_line):
-    color_line = colorchooser.askcolor(title="Выбор цвета")
-    print("color_line = ", color_line)
-
-
-def draw_color_background(color_line):
-    color_line = ((255, 255, 255), '#ffffff')
-    print("color_line = ", color_line)
 
 
 def create_button(str, function, coordinates):
