@@ -10,7 +10,6 @@ class paint_class():
     canvas = None
 
     def __init__(self, root):
-        print("Ф тут")
         self.canvas = Canvas(root, width=WIDTH, height=HEIGHT, bg="white")
         self.canvas.place(x=0, y=0)
         self.canvas.create_text(
@@ -27,7 +26,10 @@ class paint_class():
 
     def draw_figure(self, list_points):
         for i in range(len(list_points)):
-            self.print_pixel(list_points[i][0], list_points[i][1])
+            self.canvas.after(10, self.print_pixel(
+                list_points[i][0], list_points[i][1]))
+            self.canvas.update()
+            # self.print_pixel(list_points[i][0], list_points[i][1])
 
     def draw_oval(self, a, b, c, d):
         self.canvas.create_oval(a, b, c, d, outline=self.color_line[1])

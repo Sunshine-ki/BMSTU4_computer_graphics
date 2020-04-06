@@ -57,8 +57,7 @@ def main():
     create_button("Нарисовать", lambda arg1=figure_selection, arg2=method, arg3=entry_center,
                   arg4=entry_radius, arg5=entry_half_shafts, arg6=canvas_class: click(arg1, arg2, arg3, arg4, arg5, arg6), [1000, 550])
 
-    create_button(
-        "Стереть всё", canvas_class.clear_all, [1000, 775])
+    create_button("Стереть всё", canvas_class.clear_all, [1000, 775])
 
     root.mainloop()
 

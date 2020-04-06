@@ -11,7 +11,7 @@ def parametric_circle(center, radius):
         list_points.append([center[0], center[1]])
         return
 
-    for t in arange(0, 2 * pi, 1/radius):
+    for t in arange(0, -pi/2, -1 / radius):
         x = radius * cos(t) + center[0]
         y = radius * sin(t) + center[1]
         list_points.append([x, y])
