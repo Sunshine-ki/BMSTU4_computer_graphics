@@ -13,4 +13,6 @@ ELLIPSE = 1
 
 FALSE = "-"
 
+color_bg = 'white'
+
 color_line = ((0.0, 0.0, 0.0), '#000000')

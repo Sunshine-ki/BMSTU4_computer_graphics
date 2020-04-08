@@ -64,13 +64,22 @@ def lock(points_list, canvas_class, list_box, lst):
 
 def fill(canvas_class, lst):
     lst = list(lst)
-    for i in range(len(lst)):
-        # for j in range(lst[i][0], WIDTH):
-        start = lst[i]
-        stop = [WIDTH, lst[i][1]]
-        canvas_class.canvas.create_line(round(start[0]), round(
-            start[1]), round(stop[0]), round(stop[1]), width=1, fill="black")
-        # canvas_class.print_pixel(j, lst[i][1])
+    # for i in range(len(lst[0])):
+    #     y = lst[i][1]
+    #     for x in range(lst[i][0], WIDTH):
+    #         # canvas_class.reverse_color(y, x)
+    #         print(y, x)
+
+    # reverse_color()
+    for i in range(10):
+        canvas_class.reverse_color(400, 400)
+    # for i in range(len(lst)):
+    #     # for j in range(lst[i][0], WIDTH):
+    #     start = lst[i]
+    #     stop = [WIDTH, lst[i][1]]
+    #     canvas_class.canvas.create_line(round(start[0]), round(
+    #         start[1]), round(stop[0]), round(stop[1]), width=1, fill="black")
+    #     # canvas_class.print_pixel(j, lst[i][1])
 
 
 def delayed_fill(canvas_class):
