@@ -20,6 +20,9 @@ class paint_class():
         self.canvas.create_text(
             10, 10, text="Экран 800x800", font="Verdana 12")
 
+    # def print_pixel_fill(self, x, y):
+        # if
+
     def print_pixel(self, x, y):
         self.canvas.create_line(round(x), round(y), round(
             x), round(y) + 1, width=1, fill=self.color_line[1])
