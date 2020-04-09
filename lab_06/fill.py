@@ -46,13 +46,7 @@ def bresenham_int(canvas_class, start, stop, lst):
                 if start[1] != stop[1] and [int(x), int(y)] not in lst:
                     lst.append([int(x), int(y)])
             e += (2 * dy)
-    # print(lst)
 
-
-# stack = []  # Создать стек
-# stack.append(object)  # Добавить объект в начало стека
-# stack.pop() -> object  # Возвращает самый верхний объект из стека, а также удаляет его
-# list[-1] -> object  # Заглянуть в самый верхний объект, не удаляя его
 
 def fill(canvas_class, start_point, flag=False):
     start_point = get_two_answer(start_point.get())
@@ -60,7 +54,7 @@ def fill(canvas_class, start_point, flag=False):
         return
 
     # Создаем стек и кладем в него затравочную точку.
-    stack = {start_point}
+    stack = [start_point]
 
     while len(stack):
         point = stack.pop()
@@ -76,13 +70,13 @@ def fill(canvas_class, start_point, flag=False):
             canvas_class.draw_pixel(point)
 
         if canvas_class.compare_color(point[0], point[1] + 1):
-            stack.add((point[0], point[1] + 1))
+            stack.append((point[0], point[1] + 1))
 
         if canvas_class.compare_color(point[0], point[1] - 1):
-            stack.add((point[0], point[1] - 1))
+            stack.append((point[0], point[1] - 1))
 
         if canvas_class.compare_color(point[0] + 1, point[1]):
-            stack.add((point[0] + 1, point[1]))
+            stack.append((point[0] + 1, point[1]))
 
         if canvas_class.compare_color(point[0] - 1, point[1]):
-            stack.add((point[0] - 1, point[1]))
+            stack.append((point[0] - 1, point[1]))
