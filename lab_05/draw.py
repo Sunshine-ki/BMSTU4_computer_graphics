@@ -1,7 +1,10 @@
 from tkinter import *
 from tkinter import colorchooser
-
 from constants import *
+
+from functions_answer import get_two_answer
+from interface import print_error
+from fill import bresenham_int
 
 
 class paint_class():
@@ -53,3 +56,61 @@ class paint_class():
         # print("color_line = ", new_color)
         self.color_line = new_color
         self.canvas.itemconfig("user_line", fill=self.color_line[1])
+
+
+def lock(points_list, canvas_class, list_box, lst):
+    if len(points_list[-1]) > 1:
+        start = points_list[-1][0]
+        stop = points_list[-1][-1]
+
+        bresenham_int(canvas_class, start, stop, lst)
+
+        points_list.append(list())
+        list_box.insert(END, "_" * 8)
+        # print(lst)
+
+
+def add_point(points_list, point, canvas_class, list_box, lst):
+    if point in points_list[-1]:
+        print_error("Такая точка уже имеется в данном многоугольнике!")
+        return
+    points_list[-1].append(point)
+
+    list_box.insert(END, point)
+
+    # print(points_list[-1])
+
+    if len(points_list[-1]) > 1:
+        start = points_list[-1][-1]
+        stop = points_list[-1][-2]
+
+        bresenham_int(canvas_class, stop, start, lst)
+    elif len(points_list[-1]) == 1:
+        canvas_class.print_pixel(points_list[-1][0][0], points_list[-1][0][1])
+        # if [points_list[-1][0][0], points_list[-1][0][1]] not in lst:
+        # lst.append([points_list[-1][0][0], points_list[-1][0][1]])
+
+
+def add_point_click(event, canvas_class, list_box, points_list, lst):
+    add_point(points_list, [event.x, event.y], canvas_class, list_box, lst)
+
+
+def add_point_entry(point_coordinates, list_box, canvas_class, points_list, lst):
+    point = list(get_two_answer(point_coordinates.get()))
+    if point[0] == FALSE:
+        return
+    add_point(points_list, point, canvas_class, list_box, lst)
+
+
+def clear(canvas_class, list_box, points_list, lst):
+    canvas_class.clear_all()
+
+    list_box.delete(1, list_box.size())
+
+    for i in range(len(points_list) - 1, -1, -1):
+        del points_list[i]
+
+    for i in range(len(lst) - 1, -1, -1):
+        del lst[i]
+
+    points_list.append([])
