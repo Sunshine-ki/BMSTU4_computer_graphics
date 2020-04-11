@@ -87,8 +87,8 @@ def add_point(points_list, point, canvas_class, list_box, lst):
         bresenham_int(canvas_class, stop, start, lst)
     elif len(points_list[-1]) == 1:
         canvas_class.print_pixel(points_list[-1][0][0], points_list[-1][0][1])
-        # if [points_list[-1][0][0], points_list[-1][0][1]] not in lst:
-        # lst.append([points_list[-1][0][0], points_list[-1][0][1]])
+        if [points_list[-1][0][0], points_list[-1][0][1]] not in lst:
+            lst.append([points_list[-1][0][0], points_list[-1][0][1]])
 
 
 def add_point_click(event, canvas_class, list_box, points_list, lst):

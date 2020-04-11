@@ -23,13 +23,14 @@ def bresenham_int(canvas_class, start, stop, lst):
 
     e = 2 * dy - dx
 
-    for _ in range(int(dx + 1)):
+    lst.append([int(x), int(y)])
 
+    for _ in range(int(dx + 1)):
         canvas_class.print_pixel(int(x), int(y))
         if e >= 0:
             if swap == 0:
                 y += sy
-                if start[1] != stop[1] and [int(x), int(y)] not in lst:
+                if start[1] != stop[1]:  # and [int(x), int(y)] not in lst:
                     lst.append([int(x), int(y)])
             else:
                 x += sx
@@ -40,9 +41,11 @@ def bresenham_int(canvas_class, start, stop, lst):
                 x += sx
             else:
                 y += sy
-                if start[1] != stop[1] and [int(x), int(y)] not in lst:
+                if start[1] != stop[1]:  # and [int(x), int(y)] not in lst:
                     lst.append([int(x), int(y)])
             e += (2 * dy)
+    lst.append([int(x), int(y)])
+
     # print(lst)
 
 
@@ -64,6 +67,7 @@ def delayed_fill(canvas_class, lst):
     #         canvas_class.canvas.after(
     #             1, canvas_class.reverse_pixel(j, lst[i][1]))
     #         canvas_class.canvas.update()
+
     septum = lst[len(lst) // 2][0]
     print(septum)
     for i in range(len(lst)):
