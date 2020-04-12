@@ -24,7 +24,7 @@ def fill(canvas_class, lst):
     print(septum)
     for i in range(len(lst)):
         if lst[i][0] < septum:
-            for j in range(lst[i][0], septum + 1):
+            for j in range(lst[i][0] + 1, septum + 1):
                 canvas_class.reverse_pixel(j, lst[i][1])
         elif lst[i][0] > septum:
             for j in range(lst[i][0], septum, -1):
@@ -36,7 +36,7 @@ def delayed_fill(canvas_class, lst):
     print(septum)
     for i in range(len(lst)):
         if lst[i][0] < septum:
-            for j in range(lst[i][0], septum + 1):
+            for j in range(lst[i][0] + 1, septum + 1):
                 canvas_class.canvas.after(
                     1, canvas_class.reverse_pixel(j, lst[i][1]))
                 canvas_class.canvas.update()
