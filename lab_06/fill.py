@@ -10,9 +10,10 @@ from constants import *
 def find_pixel(stack, canvas_class, x_right, x, y):
     while x <= x_right:
         flag = False
-        while canvas_class.compare_color_line(x, y) and canvas_class.compare_color_fill(x, y):
-            if flag == 0:
-                flag = 1
+        while canvas_class.compare_color_line(x, y) and canvas_class.compare_color_fill(x, y) \
+                and x <= x_right:
+            if flag == False:
+                flag = True
             x += 1
 
         if flag:
@@ -21,7 +22,7 @@ def find_pixel(stack, canvas_class, x_right, x, y):
                 stack.push([x, y])
             else:
                 stack.push([x - 1, y])
-            flag = 0
+            flag = False  #
 
         # Продолжаем проверку (Если интервал был прерван)
         x_temp = x
@@ -56,9 +57,7 @@ def fill(canvas_class, start_point):
     stack = stack_class(start_point)
 
     while not stack.is_empty():
-        point = stack.pop()
-
-        x, y = point[0], point[1]
+        x, y = stack.pop()
 
         canvas_class.draw_pixel((x, y))
         x_right = fill_right(canvas_class, x + 1, y)
