@@ -2,6 +2,10 @@ from tkinter import *
 from tkinter import messagebox as mb
 
 
+def print_info(string_info):
+    mb.showinfo(title="Информация", message=string_info)
+
+
 def print_error(string_error):
     mb.showerror(title="Ошибка", message=string_error)
 
@@ -54,3 +58,14 @@ def create_list_box(root, coordinates):
     scroll = Scrollbar(command=list_box.yview)
     scroll.place(x=coordinates[0] + 390, y=coordinates[1], height=310)
     return list_box
+
+
+def clear(canvas_class, list_box, points_list):
+    canvas_class.clear_all()
+
+    list_box.delete(1, list_box.size())
+
+    for i in range(len(points_list) - 1, -1, -1):
+        del points_list[i]
+
+    points_list.append([])
