@@ -2,6 +2,10 @@ from tkinter import *
 from tkinter import messagebox as mb
 
 
+def print_info(string_info):
+    mb.showinfo(title="Информация", message=string_info)
+
+
 def print_error(string_error):
     mb.showerror(title="Ошибка", message=string_error)
 

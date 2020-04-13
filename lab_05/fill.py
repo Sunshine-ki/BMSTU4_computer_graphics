@@ -1,4 +1,6 @@
-from math import fabs
+from time import time
+
+from interface import print_info
 
 
 def find_intersections(canvas_class, start, stop, lst):
@@ -19,9 +21,18 @@ def find_intersections(canvas_class, start, stop, lst):
         x += dx
 
 
+def fill_wrapper(canvas_class, lst):
+    time_start = time()
+
+    fill(canvas_class, lst)
+
+    time_stop = time()
+    print_info("Время заполнения " + str(round(time_stop - time_start, 4)))
+
+
 def fill(canvas_class, lst):
-    septum = lst[len(lst) // 2][0]
-    print(septum)
+    # Проводим перегородку через первую вершину многоугольника.
+    septum = lst[0][0]
     for i in range(len(lst)):
         if lst[i][0] < septum:
             for j in range(lst[i][0] + 1, septum + 1):
@@ -32,8 +43,8 @@ def fill(canvas_class, lst):
 
 
 def delayed_fill(canvas_class, lst):
-    septum = lst[len(lst) // 2][0]
-    print(septum)
+    septum = lst[0][0]
+
     for i in range(len(lst)):
         if lst[i][0] < septum:
             for j in range(lst[i][0] + 1, septum + 1):

@@ -33,7 +33,7 @@ def main():
                   arg2=canvas_class, arg3=list_box, arg4=lst: lock(arg1, arg2, arg3, arg4), [1000, 200])
 
     create_button(
-        "Заполнить", lambda arg1=canvas_class, arg2=lst: fill(arg1, arg2), [1000, 675])
+        "Заполнить", lambda arg1=canvas_class, arg2=lst: fill_wrapper(arg1, arg2), [1000, 675])
 
     create_button(
         "Заполнить с задержкой", lambda arg1=canvas_class, arg2=lst: delayed_fill(arg1, arg2), [1000, 725])
