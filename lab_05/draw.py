@@ -14,7 +14,7 @@ class paint_class():
     img = None
 
     def __init__(self, root):
-        self.canvas = Canvas(root, width=WIDTH, height=HEIGHT, bg="white")
+        self.canvas = Canvas(root, width=WIDTH, height=HEIGHT, bg="lavender")
         self.canvas.place(x=0, y=0)
 
         self.img = PhotoImage(width=WIDTH, height=HEIGHT)
