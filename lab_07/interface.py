@@ -60,12 +60,28 @@ def create_list_box(root, coordinates):
     return list_box
 
 
-def clear(canvas_class, list_box, points_list):
-    canvas_class.clear_all()
+def settings_bind(canvas_class, line_list, contour):
+    canvas_class.canvas.bind(
+        "<ButtonPress>", lambda event: canvas_class.keyPress(event))
 
-    list_box.delete(1, list_box.size())
+    canvas_class.canvas.bind(
+        "<ButtonRelease>", lambda event, arg1=line_list: canvas_class.keyRelease(event, line_list))
+
+    canvas_class.canvas.bind(
+        "<Motion>", lambda event: canvas_class.Motion(event))
+
+    canvas_class.canvas.bind(
+        "<Shift-ButtonPress>", lambda event: canvas_class.keyPress_rectangle(event))
+
+    canvas_class.canvas.bind(
+        "<Shift-ButtonRelease>", lambda event, arg1=contour: canvas_class.keyRelease_rectangle(event, arg1))
+
+    canvas_class.canvas.bind(
+        "<Shift-Motion>", lambda event: canvas_class.Motion_rectangle(event))
+
+
+def clear(canvas_class, points_list):
+    canvas_class.clear_all()
 
     for i in range(len(points_list) - 1, -1, -1):
         del points_list[i]
-
-    points_list.append([])
