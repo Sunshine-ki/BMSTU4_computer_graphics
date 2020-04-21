@@ -6,6 +6,7 @@ from functions_answer import *
 from interface import *
 from constants import *
 from draw import *
+from solution import *
 
 
 def main():
@@ -32,6 +33,9 @@ def main():
     entry_contour_stop = create_entry(root, [1000, 500])
     create_button("Добавить контур", lambda arg1=contour, arg2=entry_contour_start,
                   arg3=entry_contour_stop, arg4=canvas_class: add_contour(arg1, arg2, arg3, arg4), [1000, 550])
+
+    create_button("Отсечь", lambda arg1=canvas_class, arg2=line_list, arg3=contour:
+                  solution_wrapper(arg1, arg2, arg3), [1000, 700])
 
     create_button("Стереть всё", lambda arg1=canvas_class, arg2=line_list:
                   clear(arg1, arg2), [1000, 775])

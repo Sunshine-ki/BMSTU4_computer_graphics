@@ -6,6 +6,21 @@ from interface import print_error
 from constants import *
 
 
+# class point_class():
+#     x, y = 0, 0
+
+#     def __init__(self, x, y):
+#         self.x, self.y = x, y
+
+
+# class line_class():
+#     start, end = point_class(0, 0), point_class(0, 0)
+
+#     def __init__(self, x1, y1, x2, y2):
+#         self.start = point_class(x1, y1)
+#         self.end = point_class(x2, y2)
+
+
 class paint_class():
     canvas = None
     flag = False
@@ -24,12 +39,14 @@ class paint_class():
         self.canvas.create_text(
             10, 10, text="Экран 800x800", font=FONT)
         self.canvas.create_line(0, 0, 0, 0, tags="line_temp")
-        self.canvas.create_rectangle(0, 0, 0, 0, tags="rectangle_temp")
-        self.canvas.create_rectangle(0, 0, 0, 0, tags="contour")
+        self.canvas.create_rectangle(
+            0, 0, 0, 0, tags="rectangle_temp", outline="black")
+        self.canvas.create_rectangle(
+            0, 0, 0, 0, tags="contour", outline="black")
 
-    def draw_line(self, start, stop):
+    def draw_line(self, coords, color="blue"):
         self.canvas.create_line(
-            start[0], start[1], stop[0], stop[1])
+            coords[0], coords[1], coords[2], coords[3], fill=color)
 
     def new_rectangle(self, start, stop):
         self.canvas.coords("contour", start[0], start[1], stop[0], stop[1])
@@ -51,12 +68,12 @@ class paint_class():
             return
 
         self.canvas.create_line(
-            self.start[0], self.start[1], event.x, event.y)
+            self.start[0], self.start[1], event.x, event.y, fill="red")
         line_list.append([self.start[0], self.start[1], event.x, event.y])
 
         self.flag = False
         self.start = False
-        print(line_list)
+        # print(line_list)
 
     def Motion(self, event):
         if self.start:
@@ -75,10 +92,25 @@ class paint_class():
         for i in range(len(lst) - 1, -1, -1):
             del lst[i]
 
-        lst.append(self.start)
-        lst.append([event.x, event.y])
+        # lst.append(self.start[0])
+        # lst.append(self.start[1])
+        # lst.append(event.x)
+        # lst.append(event.y)
+        if self.start[0] < event.x:
+            lst.append(self.start[0])
+            lst.append(event.x)
+        else:
+            lst.append(event.x)
+            lst.append(self.start[0])
 
-        print(lst)
+        if self.start[1] > event.y:
+            lst.append(self.start[1])
+            lst.append(event.y)
+        else:
+            lst.append(event.y)
+            lst.append(self.start[1])
+
+        # print(lst)
 
         self.flag = False
         self.start = False
@@ -118,10 +150,29 @@ def add_contour(lst, start, stop, canvas_class):
     for i in range(len(lst) - 1, -1, -1):
         del lst[i]
 
-    lst.append(list(start))
-    lst.append(list(stop))
+    # lst.append(list(start))
+    # lst.append(list(stop))
 
-    print(lst)
+    # lst.append(start[0])
+    # lst.append(start[1])
+    # lst.append(stop[0])
+    # lst.append(stop[1])
+
+    if start[0] < stop[0]:
+        lst.append(start[0])
+        lst.append(stop[0])
+    else:
+        lst.append(stop[0])
+        lst.append(start[0])
+
+    if start[1] > stop[1]:
+        lst.append(start[1])
+        lst.append(stop[1])
+    else:
+        lst.append(stop[1])
+        lst.append(start[1])
+
+    # print(lst)
 
 
 def add_line(lst, start, stop, canvas):
@@ -137,14 +188,16 @@ def add_line(lst, start, stop, canvas):
     if stop[0] == FALSE:
         return
 
-    if start == stop:
-        print_error("Начало и конец совпадают!")
-        return
+    # if start == stop:
+    #     print_error("Начало и конец совпадают!")
+    #     return
 
     if [start[0], start[1], stop[0], stop[1]] in lst:
         print_error("Данная линяя уже имеется!")
         return
 
-    canvas.draw_line(start, stop)
+    # canvas.draw_line(start, stop)
+    canvas.canvas.create_line(
+        start[0], start[1], stop[0], stop[1], fill="red")
     lst.append([start[0], start[1], stop[0], stop[1]])
-    print(lst)
+    # print(lst)
