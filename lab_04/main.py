@@ -34,7 +34,7 @@ def main():
 
     canvas_class = paint_class(root)
 
-    create_button("Выбрать цвет отрезка",
+    create_button("Выбрать цвет",
                   canvas_class.choose_color_line, [1000, 25])
     create_button("Рисовать фоновым цветом",
                   canvas_class.draw_color_background, [1000, 60])
