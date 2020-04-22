@@ -2,33 +2,7 @@ from numpy import arange
 from math import *
 
 from draw import *
-
-
-def symmetrical_reflection(list_points, center):
-    # complete the figure.
-    # n = len(list_points)
-    # for i in range(n - 1, 0, -1):
-    #     list_points.append([list_points[i][1], list_points[i][0]])
-
-    # n = len(list_points)
-    # for i in range(n):
-    #     list_points.append([list_points[i][0], HEIGHT - list_points[i][1]])
-
-    # n = len(list_points)
-    # for i in range(n):
-    #     list_points.append([WIDTH - list_points[i][0], list_points[i][1]])
-
-    n = len(list_points)
-
-    for i in range(n):
-        x = list_points[i][0]
-        x -= center[0]
-        y = list_points[i][1]
-        y -= center[1]
-        x, y = y, x
-        x += center[0]
-        y += center[1]
-        list_points.append([x, y])
+from reflection import *
 
 
 def parametric_circle(center, radius):
@@ -47,17 +21,23 @@ def parametric_circle(center, radius):
     return list_points
 
 
-def draw_circle(canvas_class, method, center, radius):
-    # print("method = ", method)
-    # print("center = ", center)
-    # print("radius = ", radius)
-    print("color_line = ", canvas_class.color_line)
+def canonical_circle(center, radius):
+    list_points = list()
+    R = radius * radius
 
+    for x in range(center[0], round(center[0] + radius / sqrt(2) + 1)):
+        y = center[1] + sqrt(R - (x - center[0]) ** 2)
+        list_points.append([x, y])
+
+    return list_points
+
+
+def draw_circle(canvas_class, method, center, radius):
     list_points = list()
 
     if method == 0:
         print("Канонический")
-        # canonical_circle(center, radius)
+        list_points = canonical_circle(center, radius)
     elif method == 1:
         print("Параметрический")
         list_points = parametric_circle(center, radius)
