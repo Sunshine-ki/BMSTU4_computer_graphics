@@ -26,7 +26,7 @@ class paint_class():
 
     def draw_figure(self, list_points):
         for i in range(len(list_points)):
-            self.canvas.after(10, self.print_pixel(
+            self.canvas.after(2, self.print_pixel(
                 list_points[i][0], list_points[i][1]))
             self.canvas.update()
             # self.print_pixel(list_points[i][0], list_points[i][1])
