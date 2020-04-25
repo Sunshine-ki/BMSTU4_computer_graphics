@@ -91,10 +91,10 @@ def draw_circle(canvas_class, method, center, radius):
     list_points = list()
 
     if method == 0:
-        print("Канонический")
+        # print("Канонический")
         list_points = canonical_circle(center, radius)
     elif method == 1:
-        print("Параметрический")
+        # print("Параметрический")
         list_points = parametric_circle(center, radius)
     elif method == 2:
         list_points = brezenham_circle(center, radius)
@@ -102,7 +102,7 @@ def draw_circle(canvas_class, method, center, radius):
         list_points = middle_point_circle(center, radius)
         pass
     elif method == 4:
-        print("Библиотечный")
+        # print("Библиотечный")
         canvas_class.draw_oval(
             center[0] - radius, center[1] - radius, center[0] + radius, center[1] + radius)
     else:
@@ -110,4 +110,9 @@ def draw_circle(canvas_class, method, center, radius):
 
     symmetrical_reflection(list_points, center)
     canvas_class.draw_figure(list_points)
-    print("Я тут")
+
+
+def draw_concentric_circle(canvas_class, center, method, r1, r2, step):
+    for i in range(r1, r2, step):
+        # canvas_class, method, center, radius
+        draw_circle(canvas_class, method, center, i)

@@ -70,25 +70,25 @@ def brezenham_ellipse(center, a, b):
 
 
 def draw_ellipse(canvas_class, method, center, axis):
-    print("method = ", method)
-    print("center, axis", center, axis)
-    print("color_line = ", canvas_class.color_line)
+    # print("method = ", method)
+    # print("center, axis", center, axis)
+    # print("color_line = ", canvas_class.color_line)
 
     list_points = list()
 
     if method == 0:
-        print("Канонический")
+        # print("Канонический")
         list_points = ellipse_canonical(center, axis[0], axis[1])
         # canonical_circle(center, radius)
     elif method == 1:
-        print("Параметрический")
+        # print("Параметрический")
         list_points = parametric_ellipse(center, axis)
     elif method == 2:
         list_points = brezenham_ellipse(center, axis[0], axis[1])
     elif method == 3:
         pass
     elif method == 4:
-        print("Библиотечный")
+        # print("Библиотечный")
         canvas_class.draw_oval(
             center[0] - axis[0], center[1] - axis[1], center[0] + axis[0], center[1] + axis[1])
         # canvas_class.draw_oval(
@@ -96,3 +96,13 @@ def draw_ellipse(canvas_class, method, center, axis):
 
     # symmetrical_reflection(list_points, center)
     canvas_class.draw_figure(list_points)
+
+
+def draw_concentric_ellipse(canvas_class, center, method, r1, r2, count, step):
+    i = 0
+    while i < count:
+        # draw_ellipse(canvas_class, method, center, axis)
+        draw_ellipse(canvas_class, method, center, [r1, r2])
+        r1 += step
+        r2 += step
+        i += 1

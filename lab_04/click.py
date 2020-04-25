@@ -4,12 +4,7 @@ from functions_answer import *
 from constants import *
 from ellipse import *
 from circle import *
-
-
-def draw_concentric_circle(canvas_class, center, method, r1, r2, step):
-    for i in range(r1, r2, step):
-        # canvas_class, method, center, radius
-        draw_circle(canvas_class, method, center, i)
+from draw import *
 
 
 def click(figure_selection, method, entry_center, entry_radius, entry_half_shafts, canvas_class):
@@ -64,7 +59,6 @@ def click_concentric(figure_selection, method, array_entry, canvas_class):
         count = int_answer(array_entry[4].get())
         if count == FALSE:
             return
-        step = ceil((r2 - r1) / count)
 
     # print("center", center)
     # print("r1 = ", r1, "r2 = ", r2)
@@ -74,8 +68,21 @@ def click_concentric(figure_selection, method, array_entry, canvas_class):
     #     print("count = ", count)
 
     if figure_selection.get() == CIRCLE:
-        print("Рисуем окружности ")
+        # print("Рисуем окружности ")
+        if not flag:
+            step = ceil((r2 - r1) / count)
+
         draw_concentric_circle(canvas_class, center,
                                method, r1, r2, step)
     else:
-        print("Рисуем эллипсы")
+        # print("Рисуем эллипсы")
+        if flag:
+            count = int_answer(array_entry[4].get())
+            if count == FALSE:
+                return
+        else:
+            step = int_answer(array_entry[3].get())
+            if step == FALSE:
+                return
+        draw_concentric_ellipse(canvas_class, center,
+                                method, r1, r2, count, step)
