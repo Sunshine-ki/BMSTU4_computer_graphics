@@ -105,6 +105,9 @@ def draw_circle(canvas_class, method, center, radius):
         print("Библиотечный")
         canvas_class.draw_oval(
             center[0] - radius, center[1] - radius, center[0] + radius, center[1] + radius)
+    else:
+        print("Нет данного метода.")
 
     symmetrical_reflection(list_points, center)
     canvas_class.draw_figure(list_points)
+    print("Я тут")

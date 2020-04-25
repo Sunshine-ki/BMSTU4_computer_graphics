@@ -1,34 +1,12 @@
 from tkinter import *
 
-from functions_answer import *
 from interface import *
 from constants import *
-from ellipse import *
-from circle import *
 from draw import *
-
-
-def click(figure_selection, method, entry_center, entry_radius, entry_half_shafts, canvas_class):
-    print(entry_radius.get())
-
-    center = get_two_answer(entry_center.get())
-    if center[0] == FALSE:
-        return
-
-    if figure_selection.get() == CIRCLE:
-        radius = int_answer(entry_radius.get())
-        if radius == FALSE:
-            return
-        draw_circle(canvas_class, method.get(), center, radius)
-    else:
-        axis = get_two_answer(entry_half_shafts.get())
-        if axis[0] == FALSE:
-            return
-        draw_ellipse(canvas_class, method.get(), center, axis)
+from click import *
 
 
 def main():
-    color_line = ((0.0, 0.0, 0.0), '#000000')
     root = Tk()
     settings_interface(root, "1200x800", "Лабораторная работа №4")
 
@@ -45,17 +23,32 @@ def main():
     create_label(root, "Алгоритм:", [1000, 200])
     method = selection(5, ALGORITHMS, [1000, 225])
 
-    create_label(root, "Центр:", [1000, 375])
-    entry_center = create_entry(root, [1000, 400])
+    create_label(root, "Центр:", [1000, 355])
+    entry_center = create_entry(root, [1000, 380])
 
-    create_label(root, "Радиус:", [1000, 425])
-    entry_radius = create_entry(root, [1000, 450])
+    create_label(root, "Радиус:", [1000, 405])
+    entry_radius = create_entry(root, [1000, 430])
 
-    create_label(root, "Полуоси:", [1000, 475])
-    entry_half_shafts = create_entry(root, [1000, 500])
+    create_label(root, "Полуоси:", [1000, 455])
+    entry_half_shafts = create_entry(root, [1000, 480])
 
     create_button("Нарисовать", lambda arg1=figure_selection, arg2=method, arg3=entry_center,
-                  arg4=entry_radius, arg5=entry_half_shafts, arg6=canvas_class: click(arg1, arg2, arg3, arg4, arg5, arg6), [1000, 550])
+                  arg4=entry_radius, arg5=entry_half_shafts, arg6=canvas_class: click(arg1, arg2, arg3, arg4, arg5, arg6), [1000, 525])
+
+    create_label(root, "Центр:", [1000, 560])
+    entry_center_concentric = create_entry(root, [1000, 580])
+    create_label(root, "r1:", [900, 610])
+    create_label(root, "r2:", [1100, 610])
+    entry_r1 = create_entry(root, [900, 630])
+    entry_r2 = create_entry(root, [1100, 630])
+    create_label(root, "Шаг:", [900, 660])
+    create_label(root, "Количество:", [1100, 660])
+    entry_step = create_entry(root, [900, 680])
+    entry_count = create_entry(root, [1100, 680])
+
+    create_button("Нарисовать спектр", lambda arg1=figure_selection, arg2=method, arg3=[entry_center_concentric, entry_r1,
+                                                                                        entry_r2, entry_step, entry_count],
+                  arg4=canvas_class: click_concentric(arg1, arg2, arg3, arg4), [1000, 715])
 
     create_button("Стереть всё", canvas_class.clear_all, [1000, 775])
 
