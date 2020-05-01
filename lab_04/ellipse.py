@@ -13,11 +13,8 @@ def ellipse_canonical(center, a, b):
         list_points.append([center[0] + x, center[1] + y])
 
     for y in range(0, b + 1, 1):
-        x = round(sqrt(1 - (y / b) ** 2) * a)
+        x = round(sqrt(1 - (y / b)**2) * a)
         list_points.append([center[0] + x, center[1] + y])
-
-    reflection_x(list_points, center)
-    reflection_y(list_points, center)
 
     return list_points
 
@@ -31,8 +28,6 @@ def parametric_ellipse(center, axis):
         y = axis[1] * sin(t) + center[1]
         list_points.append([x, y])
 
-    reflection_x(list_points, center)
-    reflection_y(list_points, center)
     return list_points
 
 
@@ -63,9 +58,6 @@ def brezenham_ellipse(center, a, b):
                 delta += sqr_b * (2 * x + 1)
         list_points.append([x + center[0], y + center[1]])
 
-    reflection_x(list_points, center)
-    reflection_y(list_points, center)
-
     return list_points
 
 
@@ -95,6 +87,8 @@ def draw_ellipse(canvas_class, method, center, axis):
         # center[0] - radius, center[1] - radius, center[0] + radius, center[1] + radius)
 
     # symmetrical_reflection(list_points, center)
+    reflection_x(list_points, center)
+    reflection_y(list_points, center)
     canvas_class.draw_figure(list_points)
 
 

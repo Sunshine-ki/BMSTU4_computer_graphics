@@ -44,16 +44,16 @@ def middle_point_circle(center, r):
 
     list_points.append([center[0] + x, center[1] + y])
 
-    p = 1 - r
+    f = 1 - r
 
     while x > y:
         y += 1
 
-        if p >= 0:
+        if f >= 0:
             x -= 1
-            p -= x + x
+            f -= x + x
 
-        p += y + y + 1
+        f += y + y + 1
 
         list_points.append([center[0] + x, center[1] + y])
 
@@ -62,10 +62,6 @@ def middle_point_circle(center, r):
 
 def parametric_circle(center, radius):
     list_points = list()
-
-    if radius == 0:
-        list_points.append([center[0], center[1]])
-        return
 
     step = 1 / radius
     for t in arange(0, pi/4 + step, step):
