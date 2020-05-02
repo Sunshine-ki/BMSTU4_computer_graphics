@@ -106,7 +106,7 @@ def cohen_sutherland(line, rectangle):
         # Т.е. вместо того, чтобы отбросить невидимую часть отрезка
         # Мы можем (Если не произведем данный обмен) отбросить видимую часть.
         if not code_1[i]:
-            line[X1], line[Y1] = line[X2], line[Y2]
+            line[X1], line[Y1], line[X2], line[Y2] = line[X2], line[Y2], line[X1], line[Y1]
 
         # Если не вертикальная линяя.
         if flag != VERTICAL_LINE:
