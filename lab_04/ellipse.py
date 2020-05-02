@@ -61,6 +61,40 @@ def brezenham_ellipse(center, a, b):
     return list_points
 
 
+def middle_point_ellipse(center, a, b):
+    list_points = list()
+
+    sqr_a, sqr_b = a * a, b * b
+    limit = round(a / sqrt(1 + sqr_b / sqr_a))
+    x, y = 0, b
+
+    list_points.append([x + center[0], y + center[1]])
+
+    f = sqr_b - round(sqr_a * (b - 1 / 4))
+    while x < limit:
+        if f > 0:
+            y -= 1
+            f -= 2 * sqr_a * y
+        x += 1
+        f += sqr_b * (2 * x + 1)
+        list_points.append([x + center[0], y + center[1]])
+
+    limit = round(b / sqrt(1 + sqr_a / sqr_b))
+
+    y, x = 0, a
+    list_points.append([x + center[0], y + center[1]])
+    f = sqr_a - round(sqr_b * (a - 1 / 4))
+    while y < limit:
+        if f > 0:
+            x -= 1
+            f -= 2 * sqr_b * x
+        y += 1
+        f += sqr_a * (2 * y + 1)
+        list_points.append([x + center[0], y + center[1]])
+
+    return list_points
+
+
 def draw_ellipse(canvas_class, method, center, axis):
     # print("method = ", method)
     # print("center, axis", center, axis)
@@ -78,7 +112,8 @@ def draw_ellipse(canvas_class, method, center, axis):
     elif method == 2:
         list_points = brezenham_ellipse(center, axis[0], axis[1])
     elif method == 3:
-        pass
+        # print("middle point")
+        list_points = middle_point_ellipse(center, axis[0], axis[1])
     elif method == 4:
         # print("Библиотечный")
         canvas_class.draw_oval(

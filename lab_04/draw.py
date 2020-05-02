@@ -26,10 +26,10 @@ class paint_class():
 
     def draw_figure(self, list_points):
         for i in range(len(list_points)):
-            self.canvas.after(3, self.print_pixel(
-                list_points[i][0], list_points[i][1]))
-            self.canvas.update()
-            # self.print_pixel(list_points[i][0], list_points[i][1])
+            # self.canvas.after(3, self.print_pixel(
+            #     list_points[i][0], list_points[i][1]))
+            # self.canvas.update()
+            self.print_pixel(list_points[i][0], list_points[i][1])
 
     def draw_oval(self, a, b, c, d):
         self.canvas.create_oval(a, b, c, d, outline=self.color_line[1])
