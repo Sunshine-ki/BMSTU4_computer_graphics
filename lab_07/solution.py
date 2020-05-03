@@ -31,13 +31,13 @@ def create_code(point, rectangle):
     return result_list
 
 
-def is_visible(start, end, rectangle):
+def is_visible(code_1, code_2, rectangle):
     """Видимость:
             1 = видимый
             0 = частично видимый
             -1 = невидимый"""
-    code_1 = create_code([start[X], start[Y]], rectangle)
-    code_2 = create_code([end[X], end[Y]], rectangle)
+    # code_1 = create_code([start[X], start[Y]], rectangle)
+    # code_2 = create_code([end[X], end[Y]], rectangle)
 
     if not sum_code(code_1) and not sum_code(code_2):
         return VISIBLE_LINE
@@ -57,7 +57,7 @@ def cohen_sutherland(line, rectangle):
     0 = горизонтальный
     -1 = вертикальный
     """
-    # Изначально считаем, что отерзок общего положения.
+    # Изначально считаем, что отрезок общего положения.
     flag, m = NORMAL_LINE, 1
     # Проверка на то, что отрезок вертикальный.
     if line[X1] - line[X2] == 0:
@@ -69,23 +69,29 @@ def cohen_sutherland(line, rectangle):
         if m == 0:
             flag = HORIZONTAL_LINE
 
+    # Итерируемся по 4 сторонам отсекателя
+    # В порядке: (x_левое, x_правое, y_нижнее, y_верхнее)
     for i in range(4):
-        vis = is_visible([line[X1], line[Y1]], [line[X2], line[Y2]], rectangle)
+        # Формируем четырехразрядный код начала отрезка.
+        code_1 = create_code([line[X1], line[Y1]], rectangle)
+        # Формируем четырехразрядный код конца отрезка.
+        code_2 = create_code([line[X2], line[Y2]], rectangle)
+        # Определяем видимость отрезка.
+        vis = is_visible(code_1, code_2, rectangle)
+        # Если отрезок видимый, возвращаем его координаты (начало и конец).
         if vis == VISIBLE_LINE:
             return line
+        # Если отрезок невидимый возвращаем признак невидимости.
         elif vis == INVISIBLE_LINE:
             return INVISIBLE_LINE
-
-        code_1 = create_code([line[X1], line[Y1]], rectangle)
-        code_2 = create_code([line[X2], line[Y2]], rectangle)
 
         # Проверяем пересечение отрезка и стороны отсекателя.
         # До этого момента не дойдет отрезок, у которого две
         # координаты по одну сторону, потому что выше мы это обработали.
         # Т.е. в данном случае может могут быть только
-        # Такие значения code_1 и code_2: 0 и 1, 1 и 0, 0 и 0
+        # Такие значения code_1[i] и code_2[i]: 0 и 1, 1 и 0, 0 и 0
         # 1 и 0, 0 и 1 - означает, что данный отрезок пересекает
-        # Данную строну отсекателя (Т.е. одна его сторона находится
+        # Данную сторону отсекателя (Т.е. одна его сторона находится
         # По невидимую сторону, а вторая по видимую => есть
         # Пересечение с данной стороной) - это то, что нам нужно.
         # 0 и 0 - означает обратное => отрезок ее не пересекает.
@@ -94,8 +100,8 @@ def cohen_sutherland(line, rectangle):
 
         # Т.к. мы собираемся искать пересечение
         # Прямой и стороны отсекателя мы должны будем после
-        # Того, как найдем данной пересечение  (если найдем его)
-        # Присвоить одной вершине отрезка данное пересечение.
+        # Того, как найдем данное пересечение
+        # Присвоить одной вершине отрезка найденное пересечение.
         # Чтобы корректной вершине присвоить пересечение
         # Мы должны проверить, что данная вершина находится по
         # Невидимую сторону стороны отсекателя. Если это не так
@@ -108,7 +114,7 @@ def cohen_sutherland(line, rectangle):
         if not code_1[i]:
             line[X1], line[Y1], line[X2], line[Y2] = line[X2], line[Y2], line[X1], line[Y1]
 
-        # Если не вертикальная линяя.
+        # Если не вертикальная линия.
         if flag != VERTICAL_LINE:
             # Т.к. rectangle представлен данном виде:
             # (x_левое, x_правое, y_нижнее, y_верхнее)
@@ -143,7 +149,7 @@ def find_solution(line_list, rectangle):
 
 def solution_wrapper(canvas_class, line_list, contour):
     result_list = find_solution(line_list, contour)
-    # А если точка, а не линяя?
+    # А если точка, а не линия?
     # А если нет линий, удовлетворяющих условию?
     for i in range(len(result_list)):
         canvas_class.draw_line(result_list[i])
