@@ -1,4 +1,5 @@
 # FOR INTERFACE #
+CHOICE = ["Отсекатель", "Отсекаемый многоугольник"]
 
 WIDTH, HEIGHT = 800, 800
 

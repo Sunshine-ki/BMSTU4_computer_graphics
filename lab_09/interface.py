@@ -65,31 +65,32 @@ def settings_bind(canvas_class, line_list, contour):
     # Button-3 # ПКМ
     # space # пробел
     canvas_class.canvas.bind(
-        "<ButtonPress>", lambda event: canvas_class.keyPress(event))
+        "<ButtonPress>", lambda event: canvas_class.keyPress_rectangle(event))
 
     canvas_class.canvas.bind(
-        "<ButtonRelease>", lambda event, arg1=line_list: canvas_class.keyRelease(event, line_list))
+        "<ButtonRelease>", lambda event, arg1=line_list: canvas_class.keyRelease_rectangle(event, line_list, "red"))
 
     canvas_class.canvas.bind(
-        "<Motion>", lambda event: canvas_class.Motion(event))
+        "<Motion>", lambda event: canvas_class.Motion_rectangle(event))
 
     canvas_class.canvas.bind(
         "<Shift-ButtonPress>", lambda event: canvas_class.keyPress_rectangle(event))
 
     canvas_class.canvas.bind(
-        "<Shift-ButtonRelease>", lambda event, arg1=contour: canvas_class.keyRelease_rectangle(event, arg1))
+        "<Shift-ButtonRelease>", lambda event, arg1=contour: canvas_class.keyRelease_rectangle(event, arg1, "blue"))
 
     canvas_class.canvas.bind(
         "<Shift-Motion>", lambda event: canvas_class.Motion_rectangle(event))
 
 
-def clear(canvas_class, points_list, contour):
+def clear(canvas_class, cutter, contour):
     canvas_class.clear_all()
 
-    for i in range(len(points_list) - 1, -1, -1):
-        del points_list[i]
+    for i in range(len(cutter) - 1, -1, -1):
+        del cutter[i]
 
     for i in range(len(contour) - 1, -1, -1):
         del contour[i]
 
     contour.append([])
+    cutter.append([])

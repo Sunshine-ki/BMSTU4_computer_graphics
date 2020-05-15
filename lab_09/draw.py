@@ -79,27 +79,28 @@ class paint_class():
         self.stop = [event.x, event.y]
         # self.flag = True
 
-    def keyRelease_rectangle(self, event, lst):
+    def keyRelease_rectangle(self, event, lst, color):
         if self.start:
             self.canvas.create_line(
-                self.start[0], self.start[1], self.stop[0], self.stop[1], fill="blue")
+                self.start[0], self.start[1], self.stop[0], self.stop[1], fill=color)
 
             lst[-1].append([self.start[0], self.start[1],
                             self.stop[0], self.stop[1]])
             # print(self.start, self.stop)
 
-    def keySpace_rectangle(self, event, lst):
-        self.canvas.create_line(
-            lst[-1][-1][2], lst[-1][-1][3], lst[-1][0][0], lst[-1][0][1], fill="blue")
+    def keySpace_rectangle(self, event, lst, color):
+        if (len(lst[-1]) > 1):
+            self.canvas.create_line(
+                lst[-1][-1][2], lst[-1][-1][3], lst[-1][0][0], lst[-1][0][1], fill=color)
 
-        lst.append([lst[-1][-1][2], lst[-1][-1][3],
-                    lst[-1][0][0], lst[-1][0][1]])
-        lst.append([])
-        print(lst)
-        self.canvas.coords("line_rectangle", 0, 0, 0, 0)
-        self.flag = False
-        self.start = False
-        self.stop = False
+            lst.append([lst[-1][-1][2], lst[-1][-1][3],
+                        lst[-1][0][0], lst[-1][0][1]])
+            lst.append([])
+            print(lst)
+            self.canvas.coords("line_rectangle", 0, 0, 0, 0)
+            self.flag = False
+            self.start = False
+            self.stop = False
 
 
 def close_contour(lst, contour, canvas_class):
@@ -114,15 +115,19 @@ def close_contour(lst, contour, canvas_class):
     # print(contour)
     # print(lst)
 
+    for i in range(len(lst) - 1, -1, -1):
+        del lst[i]
 
-def add_contour(lst, start, canvas_class):
+
+def add_contour(cutter, temp_contour, start, canvas_class, selection):
     start = get_two_answer(start.get())
     if start[0] == FALSE:
         return
-    lst.append([start[0], start[1]])
-    if len(lst) >= 2:
-        canvas_class.canvas.create_line(
-            lst[-1][0], lst[-1][1], lst[-2][0], lst[-2][1], fill="blue")
+    print(selection.get())
+    # lst.append([start[0], start[1]])
+    # if len(lst) >= 2:
+    #     canvas_class.canvas.create_line(
+    #         lst[-1][0], lst[-1][1], lst[-2][0], lst[-2][1], fill="blue")
 
 
 def add_line(lst, start, stop, canvas):
