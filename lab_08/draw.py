@@ -89,17 +89,18 @@ class paint_class():
             # print(self.start, self.stop)
 
     def keySpace_rectangle(self, event, lst):
-        self.canvas.create_line(
-            lst[-1][-1][2], lst[-1][-1][3], lst[-1][0][0], lst[-1][0][1], fill="blue")
+        if len(lst[-1]) > 1:
+            self.canvas.create_line(
+                lst[-1][-1][2], lst[-1][-1][3], lst[-1][0][0], lst[-1][0][1], fill="blue")
 
-        lst.append([lst[-1][-1][2], lst[-1][-1][3],
-                    lst[-1][0][0], lst[-1][0][1]])
-        lst.append([])
-        print(lst)
-        self.canvas.coords("line_rectangle", 0, 0, 0, 0)
-        self.flag = False
-        self.start = False
-        self.stop = False
+            lst.append([lst[-1][-1][2], lst[-1][-1][3],
+                        lst[-1][0][0], lst[-1][0][1]])
+            lst.append([])
+            print(lst)
+            self.canvas.coords("line_rectangle", 0, 0, 0, 0)
+            self.flag = False
+            self.start = False
+            self.stop = False
 
 
 def close_contour(lst, contour, canvas_class):
