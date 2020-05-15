@@ -111,8 +111,11 @@ def close_contour(lst, contour, canvas_class):
                                 lst[i+1][0], lst[i+1][1]])
         contour[-1].append([lst[0][0], lst[0][1],
                             lst[-1][0], lst[-1][1]])
-    # print(contour)
-    # print(lst)
+    print(contour)
+    print(lst)
+
+    for i in range(len(lst) - 1, -1, -1):
+        del lst[i]
 
 
 def add_contour(lst, start, canvas_class):
