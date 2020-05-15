@@ -129,6 +129,7 @@ def close_contour(cutter, contour, lst, canvas_class, selection):  # cutter от
 
     for i in range(len(lst) - 1, -1, -1):
         del lst[i]
+
     print(lst)
 
 

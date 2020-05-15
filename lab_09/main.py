@@ -30,16 +30,19 @@ def main():
 
     figure_selection = selection(2, CHOICE, [1000, 100])
 
+    create_label(root, "Красный - отсекатель", [1000, 15])
+    create_label(root, "Синий - отсекаемый\n многоугольник ", [1000, 60])
+
     # create_label(root, "Ввод:", [1000, 425])
-    create_label(root, "Вершина", [900, 200])
-    entry_contour_start = create_entry(root, [1030, 200])
+    create_label(root, "Вершина", [900, 175])
+    entry_contour_start = create_entry(root, [1030, 175])
     # create_label(root, "До:", [900, 500])
     # entry_contour_stop = create_entry(root, [1000, 500])
     create_button("Добавить вершину", lambda arg1=temp_contour, arg2=entry_contour_start,
-                  arg3=canvas_class, arg4=figure_selection: add_contour(arg1, arg2, arg3, arg4), [1000, 250])
+                  arg3=canvas_class, arg4=figure_selection: add_contour(arg1, arg2, arg3, arg4), [1000, 225])
 
     create_button("Замкнуть", lambda arg1=cutter,  arg2=contour, arg3=temp_contour,
-                  arg4=canvas_class, arg5=figure_selection: close_contour(arg1, arg2, arg3, arg4, arg5), [1000, 300])
+                  arg4=canvas_class, arg5=figure_selection: close_contour(arg1, arg2, arg3, arg4, arg5), [1000, 275])
 
     create_button("Отсечь", lambda arg1=canvas_class, arg2=cutter, arg3=contour:
                   solution_wrapper(arg1, arg2, arg3), [1000, 700])
