@@ -103,31 +103,47 @@ class paint_class():
             self.stop = False
 
 
-def close_contour(lst, contour, canvas_class):
+def close_contour(cutter, contour, lst, canvas_class, selection):  # cutter отсекатель 0
     if len(lst) >= 2:
+        choice = selection.get()
+        color = "blue"
+        if choice == 0:
+            color = "red"
         canvas_class.canvas.create_line(
-            lst[-1][0], lst[-1][1], lst[0][0], lst[0][1], fill="blue")
-        for i in range(len(lst) - 1):
-            contour[-1].append([lst[i][0], lst[i][1],
-                                lst[i+1][0], lst[i+1][1]])
-        contour[-1].append([lst[0][0], lst[0][1],
-                            lst[-1][0], lst[-1][1]])
-    # print(contour)
-    # print(lst)
+            lst[-1][0], lst[-1][1], lst[0][0], lst[0][1], fill=color)
+        # print(selection.get())
+        if choice == 1:
+            for i in range(len(lst) - 1):
+                contour[-1].append([lst[i][0], lst[i][1],
+                                    lst[i+1][0], lst[i+1][1]])
+            contour[-1].append([lst[0][0], lst[0][1],
+                                lst[-1][0], lst[-1][1]])
+        elif choice == 0:
+            for i in range(len(lst) - 1):
+                cutter[-1].append([lst[i][0], lst[i][1],
+                                   lst[i+1][0], lst[i+1][1]])
+            cutter[-1].append([lst[0][0], lst[0][1],
+                               lst[-1][0], lst[-1][1]])
+    print("contour = ", contour)
+    print("cutter = ", cutter)
 
     for i in range(len(lst) - 1, -1, -1):
         del lst[i]
+    print(lst)
 
 
-def add_contour(cutter, temp_contour, start, canvas_class, selection):
+def add_contour(lst, start, canvas_class, selection):
+    choice = selection.get()
+    color = "blue"
+    if choice == 0:
+        color = "red"
     start = get_two_answer(start.get())
     if start[0] == FALSE:
         return
-    print(selection.get())
-    # lst.append([start[0], start[1]])
-    # if len(lst) >= 2:
-    #     canvas_class.canvas.create_line(
-    #         lst[-1][0], lst[-1][1], lst[-2][0], lst[-2][1], fill="blue")
+    lst.append([start[0], start[1]])
+    if len(lst) >= 2:
+        canvas_class.canvas.create_line(
+            lst[-1][0], lst[-1][1], lst[-2][0], lst[-2][1], fill=color)
 
 
 def add_line(lst, start, stop, canvas):

@@ -15,8 +15,11 @@ def find_solution(line_list, rectangle):
     return result_list
 
 
-def solution_wrapper(canvas_class, line_list, contour):
-    result_list = find_solution(line_list, contour)
+def solution_wrapper(canvas_class, cutter, contour):
+    print("(Отсекатель) cutter = ", cutter)
+    print("contour = ", contour)
 
-    for i in range(len(result_list)):
-        canvas_class.draw_line(result_list[i])
+    # result_list = find_solution(line_list, contour)
+
+    # for i in range(len(result_list)):
+    #     canvas_class.draw_line(result_list[i])

@@ -19,7 +19,7 @@ greeting = "Добро пожаловать в \"Интуитивно понят
 def main():
     root = Tk()
 
-    cutter = [[]]
+    cutter = [[]]  # отсекатель
     contour = [[]]
     temp_contour = []
     settings_interface(root, "1200x800", "Лабораторная работа №9")
@@ -35,11 +35,11 @@ def main():
     entry_contour_start = create_entry(root, [1030, 200])
     # create_label(root, "До:", [900, 500])
     # entry_contour_stop = create_entry(root, [1000, 500])
-    create_button("Добавить вершину", lambda arg1=cutter, arg2=temp_contour, arg3=entry_contour_start,
-                  arg4=canvas_class, arg5=figure_selection: add_contour(arg1, arg2, arg3, arg4, arg5), [1000, 250])
+    create_button("Добавить вершину", lambda arg1=temp_contour, arg2=entry_contour_start,
+                  arg3=canvas_class, arg4=figure_selection: add_contour(arg1, arg2, arg3, arg4), [1000, 250])
 
-    create_button("Замкнуть", lambda arg1=temp_contour, arg2=contour,
-                  arg3=canvas_class: close_contour(arg1, arg2, arg3), [1000, 300])
+    create_button("Замкнуть", lambda arg1=cutter,  arg2=contour, arg3=temp_contour,
+                  arg4=canvas_class, arg5=figure_selection: close_contour(arg1, arg2, arg3, arg4, arg5), [1000, 300])
 
     create_button("Отсечь", lambda arg1=canvas_class, arg2=cutter, arg3=contour:
                   solution_wrapper(arg1, arg2, arg3), [1000, 700])
