@@ -93,10 +93,10 @@ class paint_class():
             self.canvas.create_line(
                 lst[-1][-1][2], lst[-1][-1][3], lst[-1][0][0], lst[-1][0][1], fill="blue")
 
-            lst.append([lst[-1][-1][2], lst[-1][-1][3],
-                        lst[-1][0][0], lst[-1][0][1]])
+            lst[-1].append([lst[-1][-1][2], lst[-1][-1][3],
+                            lst[-1][0][0], lst[-1][0][1]])
             lst.append([])
-            print(lst)
+            # print(lst)
             self.canvas.coords("line_rectangle", 0, 0, 0, 0)
             self.flag = False
             self.start = False
@@ -110,10 +110,9 @@ def close_contour(lst, contour, canvas_class):
         for i in range(len(lst) - 1):
             contour[-1].append([lst[i][0], lst[i][1],
                                 lst[i+1][0], lst[i+1][1]])
-        contour[-1].append([lst[0][0], lst[0][1],
-                            lst[-1][0], lst[-1][1]])
-    print(contour)
-    print(lst)
+        contour[-1].append([lst[-1][0], lst[-1][1], lst[0][0], lst[0][1]])
+    # print(contour)
+    # print(lst)
 
     for i in range(len(lst) - 1, -1, -1):
         del lst[i]
@@ -149,4 +148,4 @@ def add_line(lst, start, stop, canvas):
     canvas.canvas.create_line(
         start[0], start[1], stop[0], stop[1], fill="red")
     lst.append([start[0], start[1], stop[0], stop[1]])
-    # print(lst)
+    print(lst)

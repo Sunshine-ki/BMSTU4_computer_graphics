@@ -21,9 +21,9 @@ def main():
     line_list = list()
     contour = [[]]
     temp_contour = []
-    settings_interface(root, "1200x800", "Лабораторная работа №7")
+    settings_interface(root, "1200x800", "Лабораторная работа №8")
 
-    print_info(greeting)
+    # print_info(greeting)
 
     canvas_class = paint_class(root)
 
@@ -47,7 +47,7 @@ def main():
                   arg3=canvas_class: close_contour(arg1, arg2, arg3), [1000, 550])
 
     create_button("Отсечь", lambda arg1=canvas_class, arg2=line_list, arg3=contour:
-                  solution_wrapper(arg1, arg2, arg3), [1000, 700])
+                  SolutionWrapper(arg1, arg2, arg3), [1000, 700])
 
     create_button("Стереть всё", lambda arg1=canvas_class, arg2=line_list, arg3=contour:
                   clear(arg1, arg2, arg3), [1000, 775])
