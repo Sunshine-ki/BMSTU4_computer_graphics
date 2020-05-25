@@ -34,16 +34,18 @@ def Find_W(line1, line2):
     return [line1[0] - line2[0], line1[1] - line2[1]]
 
 
-def FindNormal(line, edge):
+def FindNormal(edge, sing):  # edge
+    return [-sing * (edge[3] - edge[1]), sing *
+            (edge[2] - edge[0])]
     # print(line[3], line[1])
     # print(line[2], line[0])
-    n = [line[3] - line[1], line[2] - line[0]]
-    # print(scalar(n, GetVector(edge)))
-    if scalar(n, GetVector(edge)) < 0:
-        print("scalar(n, GetVector(edge)) < 0")
-        n = [-n[0], n[1]]
+    # n = [line[3] - line[1], line[2] - line[0]]
+    # # print(scalar(n, GetVector(edge)))
+    # if scalar(n, GetVector(edge)) < 0:
+    #     print("scalar(n, GetVector(edge)) < 0")
+    #     n = [-n[0], n[1]]
 
-    return n
+    # return n
 
 
 # [[62, 54, 71, 761], [71, 761, 746, 762], [746, 762, 738, 35], [738, 35, 62, 54]]
@@ -66,8 +68,7 @@ def CyrusBeck(rectangle, line, sing):
         # Находим W (fi - верширны многоугольника).
         W = Find_W(line, rectangle[i])
         # Находим вектор внутренней нормали.
-        N = [-sing * (rectangle[i][3] - rectangle[i][1]), sing *
-             (rectangle[i][2] - rectangle[i][0])]
+        N = FindNormal(rectangle[i], sing)
         # print("W = ", W)
         # print("N = ", N)
         # Скалярное произведение D на N.
