@@ -23,7 +23,7 @@ def main():
     temp_contour = []
     settings_interface(root, "1200x800", "Лабораторная работа №8")
 
-    # print_info(greeting)
+    print_info(greeting)
 
     canvas_class = paint_class(root)
 
@@ -38,8 +38,6 @@ def main():
     create_label(root, "Ввод контура:", [1000, 425])
     create_label(root, "Вершина", [900, 450])
     entry_contour_start = create_entry(root, [1030, 450])
-    # create_label(root, "До:", [900, 500])
-    # entry_contour_stop = create_entry(root, [1000, 500])
     create_button("Добавить вершину", lambda arg1=temp_contour, arg2=entry_contour_start,
                   arg4=canvas_class: add_contour(arg1, arg2, arg4), [1000, 500])
 

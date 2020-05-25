@@ -52,7 +52,7 @@ class paint_class():
         if len(line_list) >= 10:
             self.start = False
             self.flag = False
-            print_error("Нельзя рисовать более 10 линий!")
+            print_error("Нельзя рисовать более 10 отрезков!")
             return
 
         self.canvas.create_line(
@@ -130,7 +130,7 @@ def add_contour(lst, start, canvas_class):
 
 def add_line(lst, start, stop, canvas):
     if len(lst) >= 10:
-        print_error("Нельзя рисовать более 10 линий!")
+        print_error("Нельзя рисовать более 10 отрезков!")
         return
 
     start = get_two_answer(start.get())
@@ -148,4 +148,4 @@ def add_line(lst, start, stop, canvas):
     canvas.canvas.create_line(
         start[0], start[1], stop[0], stop[1], fill="red")
     lst.append([start[0], start[1], stop[0], stop[1]])
-    print(lst)
+    # print(lst)
