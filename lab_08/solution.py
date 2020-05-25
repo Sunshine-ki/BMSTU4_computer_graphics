@@ -34,9 +34,19 @@ def Find_W(line1, line2):
     return [line1[0] - line2[0], line1[1] - line2[1]]
 
 
-def FindNormal(edge, sing):  # edge
-    return [-sing * (edge[3] - edge[1]), sing *
-            (edge[2] - edge[0])]
+def FindNormal(edge, sing, inc_edge):  # edge
+    # n = [edge[3] - edge[1], edge[2] - edge[0]]
+
+    n = [edge[3] - edge[1], edge[0] - edge[2]]
+    if scalar(n, GetVector(inc_edge)) < 0:
+        n = [-n[0], -n[1]]
+
+    result = [-sing * (edge[3] - edge[1]), sing *
+              (edge[2] - edge[0])]
+    print("n = ", n)
+    print("Result n (+ sing) = ", result)
+
+    return result
     # print(line[3], line[1])
     # print(line[2], line[0])
     # n = [line[3] - line[1], line[2] - line[0]]
@@ -68,7 +78,10 @@ def CyrusBeck(rectangle, line, sing):
         # Находим W (fi - верширны многоугольника).
         W = Find_W(line, rectangle[i])
         # Находим вектор внутренней нормали.
-        N = FindNormal(rectangle[i], sing)
+        if i == len(rectangle) - 1:
+            N = FindNormal(rectangle[i], sing, rectangle[0])
+        else:
+            N = FindNormal(rectangle[i], sing, rectangle[i + 1])
         # print("W = ", W)
         # print("N = ", N)
         # Скалярное произведение D на N.
@@ -130,16 +143,12 @@ def FindSolution(line_list, rectangle, sing):
 
 
 def SolutionWrapper(canvas_class, line_list, polygon):
-    # print("line_list = ", line_list)
-    # print("polygon = ", polygon)
     sing = IsConvex(polygon)
     if not sing:
         print_error("Многоугольник невыпуклый!")
         return
 
     result_list = FindSolution(line_list, polygon, sing)
-    # print("result_list = ", result_list)
-    # canvas_class.draw_line(result_list[i])
 
     for i in range(len(result_list)):
         canvas_class.draw_line([result_list[i][0][0], result_list[i]
