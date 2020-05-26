@@ -45,7 +45,7 @@ def main():
                   arg4=canvas_class, arg5=figure_selection: close_contour(arg1, arg2, arg3, arg4, arg5), [1000, 275])
 
     create_button("Отсечь", lambda arg1=canvas_class, arg2=cutter, arg3=contour:
-                  solution_wrapper(arg1, arg2, arg3), [1000, 700])
+                  SolutionWrapper(arg1, arg2, arg3), [1000, 700])
 
     create_button("Стереть всё", lambda arg1=canvas_class, arg2=cutter, arg3=contour:
                   clear(arg1, arg2, arg3), [1000, 775])

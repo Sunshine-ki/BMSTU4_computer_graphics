@@ -32,9 +32,9 @@ class paint_class():
         # self.canvas.create_rectangle(
         # 0, 0, 0, 0, tags="contour", outline="black")
 
-    def draw_line(self, coords, color="blue"):
+    def draw_line(self, coords, color="blue", w=1):
         self.canvas.create_line(
-            coords[0], coords[1], coords[2], coords[3], fill=color)
+            coords[0], coords[1], coords[2], coords[3], fill=color, width=w)
 
     def new_rectangle(self, start, stop):
         self.canvas.coords("contour", start[0], start[1], stop[0], stop[1])
@@ -49,15 +49,10 @@ class paint_class():
 
     def keyRelease(self, event, line_list):
         self.canvas.coords("line_temp", 0, 0, 0, 0)
-        if len(line_list) >= 10:
-            self.start = False
-            self.flag = False
-            print_error("Нельзя рисовать более 10 линий!")
-            return
 
         self.canvas.create_line(
             self.start[0], self.start[1], event.x, event.y, fill="red")
-        line_list.append([self.start[0], self.start[1], event.x, event.y])
+        line_list[-1].append([self.start[0], self.start[1], event.x, event.y])
 
         self.flag = False
         self.start = False
@@ -93,10 +88,10 @@ class paint_class():
             self.canvas.create_line(
                 lst[-1][-1][2], lst[-1][-1][3], lst[-1][0][0], lst[-1][0][1], fill=color)
 
-            lst.append([lst[-1][-1][2], lst[-1][-1][3],
-                        lst[-1][0][0], lst[-1][0][1]])
+            lst[-1].append([lst[-1][-1][2], lst[-1][-1][3],
+                            lst[-1][0][0], lst[-1][0][1]])
             lst.append([])
-            print(lst)
+            # print(lst)
             self.canvas.coords("line_rectangle", 0, 0, 0, 0)
             self.flag = False
             self.start = False
@@ -116,21 +111,23 @@ def close_contour(cutter, contour, lst, canvas_class, selection):  # cutter от
             for i in range(len(lst) - 1):
                 contour[-1].append([lst[i][0], lst[i][1],
                                     lst[i+1][0], lst[i+1][1]])
-            contour[-1].append([lst[0][0], lst[0][1],
-                                lst[-1][0], lst[-1][1]])
+            contour[-1].append([lst[-1][0], lst[-1][1], lst[0][0], lst[0][1],
+                                ])
+            contour.append([])
         elif choice == 0:
             for i in range(len(lst) - 1):
                 cutter[-1].append([lst[i][0], lst[i][1],
                                    lst[i+1][0], lst[i+1][1]])
-            cutter[-1].append([lst[0][0], lst[0][1],
-                               lst[-1][0], lst[-1][1]])
-    print("contour = ", contour)
-    print("cutter = ", cutter)
+            cutter[-1].append([lst[-1][0], lst[-1][1], lst[0][0], lst[0][1]])
+            cutter.append([])
+
+    # print("contour = ", contour)
+    # print("cutter = ", cutter)
 
     for i in range(len(lst) - 1, -1, -1):
         del lst[i]
 
-    print(lst)
+    # print(lst)
 
 
 def add_contour(lst, start, canvas_class, selection):
@@ -148,9 +145,9 @@ def add_contour(lst, start, canvas_class, selection):
 
 
 def add_line(lst, start, stop, canvas):
-    if len(lst) >= 10:
-        print_error("Нельзя рисовать более 10 линий!")
-        return
+    # if len(lst) >= 10:
+    #     print_error("Нельзя рисовать более 10 линий!")
+    #     return
 
     start = get_two_answer(start.get())
     if start[0] == FALSE:
