@@ -1,9 +1,11 @@
+import copy
+from copy import deepcopy
+
 from interface import print_error
 from convex import IsConvex
 from constants import *
 
-import copy
-from copy import deepcopy
+EPS = 1e-6
 
 
 def get_nodes(polygon):
@@ -12,63 +14,55 @@ def get_nodes(polygon):
         nodes.append([polygon[i][0], polygon[i][1]])
     return nodes
 
-# (Отсекатель)cutter = [
-#     [[663, 230, 532, 516], [532, 516, 198, 508], [198, 508, 193, 351], [193, 351, 663, 230]],
-#     [[354, 410, 405, 475], [405, 475, 463, 379], [463, 379, 333, 351], [333, 351, 354, 410]],
-#     [[286, 436, 124, 314], [124, 314, 165, 210], [165, 210, 251, 242], [251, 242, 286, 436]], []]
-# contour = [
-#     [[165, 54, 175, 296], [175, 296, 417, 312], [417, 312, 414, 89], [414, 89, 165, 54]],
-#     [[138, 89, 114, 386], [114, 386, 501, 429], [501, 429, 459, 39], [459, 39, 138, 89]],
-#     [[229, 160, 246, 259], [246, 259, 332, 233], [332, 233, 280, 125], [280, 125, 229, 160]],
-#     []]
-
 
 def is_intersection(ed1, ed2, norm):
-    vis1 = is_visiable(ed1[0], ed2[0], ed2[1], norm)
-    vis2 = is_visiable(ed1[1], ed2[0], ed2[1], norm)
-    if (vis1 and not vis2) or (not vis1 and vis2):
-        # ищем пересечение
+    # Определяем видимость вершин относительно рассматриваемого ребра.
+    visiable1 = IsVisiable(ed1[0], ed2[0], ed2[1], norm)
+    visiable2 = IsVisiable(ed1[1], ed2[0], ed2[1], norm)
 
-        p1 = ed1[0]
-        p2 = ed1[1]
-
-        q1 = ed2[0]
-        q2 = ed2[1]
-
-        delta = (p2[0] - p1[0]) * (q1[1] - q2[1]) - \
-            (q1[0] - q2[0]) * (p2[1] - p1[1])
-        delta_t = (q1[0] - p1[0]) * (q1[1] - q2[1]) - \
-            (q1[0] - q2[0]) * (q1[1] - p1[1])
-
-        if abs(delta) <= 1e-6:
-            return p2
-
-        t = delta_t / delta
-
-        return [ed1[0][0] + (ed1[1][0] - ed1[0][0]) * t, ed1[0][1] + (ed1[1][1] - ed1[0][1]) * t]
-    else:
+    # Если одна вершина видна, а вторая нет (Есть пересечение).
+    # Иначе пересечения нет.
+    if not (visiable1 ^ visiable2):
         return False
 
+    # ищем пересечение
+    p1 = ed1[0]
+    p2 = ed1[1]
 
-def is_visiable(point, peak1, peak2, norm):
+    q1 = ed2[0]
+    q2 = ed2[1]
 
-    # print(point, peak1, peak2, norm)
-    # print(norm)
+    delta = (p2[0] - p1[0]) * (q1[1] - q2[1]) - \
+        (q1[0] - q2[0]) * (p2[1] - p1[1])
+    delta_t = (q1[0] - p1[0]) * (q1[1] - q2[1]) - \
+        (q1[0] - q2[0]) * (q1[1] - p1[1])
 
-    v = vector([point, peak1], [peak2, peak1])
+    if abs(delta) <= EPS:
+        return p2
+
+    t = delta_t / delta
+
+    return [ed1[0][0] + (ed1[1][0] - ed1[0][0]) * t, ed1[0][1] + (ed1[1][1] - ed1[0][1]) * t]
+
+
+def IsVisiable(point, peak1, peak2, norm):
+    v = vector([peak1, point], [peak1, peak2])
     if norm * v < 0:
         return True
     return False
 
 
-def vector(v1, v2):
-    x1 = v1[0][0] - v1[1][0]
-    y1 = v1[0][1] - v1[1][1]
+def GetVector(line):
+    # Чтобы найти координаты вектора AB, зная координаты его начальной точки
+    # А и конечной точки В, необходимо из координат конечной точки вычесть
+    # соответствующие координаты начальной точки.
+    return [line[1][0] - line[0][0], line[1][1] - line[0][1]]
 
-    x2 = v2[0][0] - v2[1][0]
-    y2 = v2[0][1] - v2[1][1]
 
-    return x1 * y2 - x2 * y1
+def vector(line1, line2):
+    vector1 = GetVector(line1)
+    vector2 = GetVector(line2)
+    return vector1[0] * vector2[1] - vector2[0] * vector1[1]
 
 
 def sutherland_hodgman(cutter, polygon, norm):
@@ -97,7 +91,7 @@ def sutherland_hodgman(cutter, polygon, norm):
                     new.append(t)
 
             s = polygon[j]
-            if is_visiable(s,  cutter[i], cutter[i + 1], norm):
+            if IsVisiable(s,  cutter[i], cutter[i + 1], norm):
                 new.append(s)
 
         if len(new):
@@ -139,3 +133,25 @@ def SolutionWrapper(canvas_class, cutter, polygon):
         canvas_class.draw_line(
             [round(result[i][0]), round(result[i][1]),
              round(result[i+1][0]), round(result[i+1][1])], "green", 2)
+
+
+# def GetVector(line):
+#     # Чтобы найти координаты вектора AB, зная координаты его начальной точки
+#     # А и конечной точки В, необходимо из координат конечной точки вычесть
+#     # соответствующие координаты начальной точки.
+#     return [line[2] - line[0], line[3] - line[1]]
+
+    #    if i == len(edges) - 1:
+#     #         N = FindNormal(edges[i], edges[0])
+#     #     else:
+#     #         N = FindNormal(edges[i], edges[i + 1])
+
+
+# def FindNormal(edge, inc_edge):
+#     n = [edge[3] - edge[1], edge[0] - edge[2]]
+#     if scalar(n, GetVector(inc_edge)) < 0:
+#         n = [-n[0], -n[1]]
+#     return n
+
+# def scalar(v1, v2):
+#     return v1[0] * v2[0] + v1[1] * v2[1]
