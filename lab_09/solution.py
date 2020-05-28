@@ -22,15 +22,17 @@ def Find_W(p1, p2):
 
 
 def ConvertParametric(line, t):
-    return [line[0][0] + (line[1][0] - line[0][0]) * t, line[0][1] + (line[1][1] - line[0][1]) * t]
+    return [round(line[0][0] + (line[1][0] - line[0][0]) * t), round(line[0][1] + (line[1][1] - line[0][1]) * t)]
 
 
-def IsIntersection(ed1, ed2, norm, peak):
+def IsIntersection(ed1, ed2, peak):
     # ed1 - ребро отсекаемого многоугольника.
     # ed2 - ребро отсекателя.
+    # peak - след. вершина отсекателя, нужна для
+    # корректного определения нормали
     # Определяем видимость вершин относительно рассматриваемого ребра.
-    visiable1 = IsVisiable(ed1[0], ed2[0], ed2[1], norm, peak)
-    visiable2 = IsVisiable(ed1[1], ed2[0], ed2[1], norm, peak)
+    visiable1 = IsVisiable(ed1[0], ed2[0], ed2[1], peak)
+    visiable2 = IsVisiable(ed1[1], ed2[0], ed2[1], peak)
 
     # Если одна вершина видна, а вторая нет (Есть пересечение).
     # Иначе пересечения нет.
@@ -46,9 +48,15 @@ def IsIntersection(ed1, ed2, norm, peak):
     # Скалярное произведение W на N.
     WScalar = Scalar(W, N)
 
-    if abs(DScalar) <= EPS:
-        return ed1[1]
-
+    # DScalar может быть равен нулю в двух случаях:
+    # 1. Если ребро отсекателя вырождается в точку
+    # Т.е. p1 == p2. В интерфейсе обработан данный случай
+    # (Пользователь не может ввести ребро у которого начало и конец совпадают)
+    # 2. Если текущее ребро отсекаемого многоугольника параллельно
+    # Ребру отсекателя. Такие ребра не дойдут до этого момента -
+    # Они будут обработаны выше. Т.к. в этом случае нет пересечения
+    # Обе вершины отсекаемого многоугольника будут либо по видимую сторону
+    # Отсекателя, либо по невидимую.
     t = -WScalar/DScalar
 
     return ConvertParametric(ed1, t)
@@ -70,7 +78,7 @@ def FindNormal(peak1, peak2, peak3):
     return n
 
 
-def IsVisiable(point, peak1, peak2, norm, peak3):
+def IsVisiable(point, peak1, peak2, peak3):
     # Находим нормаль к ребру (peak1, peak2)
     # peak3 нужно, чтобы проверить нормаль (Внутренняя ли она).
     n = FindNormal(peak1, peak2, peak3)
@@ -86,46 +94,57 @@ def GetVector(line):
     return [line[1][0] - line[0][0], line[1][1] - line[0][1]]
 
 
-def SutherlandHodgman(cutter, polygon, norm):
+def SutherlandHodgman(cutter, polygon):
     # Для удобства работы алгоритма первая вершина
     # отсекателя заносится в массив дважды (В начало и конец.).
     # Т.к. последнее ребро отсекателя образуется
     # последней и первой вершинами многоугольника.
     cutter.append(cutter[0])
     cutter.append(cutter[1])
-
-    s = None
-    f = None
     # цикл по вершинам отсекателя
     for i in range(len(cutter) - 2):
         new = []  # новый массив вершин
+        # Особым образом нужно обрабатывать первую
+        # точку многоугольника: для нее требуется определить
+        # только видимость. Если точка видима, то она заносится
+        #  в результирующий список и становится начальной точкой первого ребра.
+        #  Если же она невидима, то она просто становится начальной точкой ребра и в результирующий список не заносится.
+        f = polygon[0]  # Запоминаем первую вершину.
+        if IsVisiable(f,  cutter[i], cutter[i + 1], cutter[i + 2]):
+            new.append(f)
+        s = polygon[0]
         # цикл по вершинам многоугольника
-        for j in range(len(polygon)):
-            # Если первая вершина
-            if j == 0:
-                # То запоминаем ее.
-                f = polygon[j]
-            else:
-                 # Иначе определяем пересечение. (Если оно есть).
-                t = IsIntersection(
-                    [s, polygon[j]], [cutter[i], cutter[i + 1]], norm, cutter[i + 2])
-                if t:
-                    new.append(t)
-
-            s = polygon[j]
-            if IsVisiable(s,  cutter[i], cutter[i + 1], norm, cutter[i + 2]):
-                new.append(s)
-
-        if len(new):
+        for j in range(1, len(polygon)):
+            # Определяем пересечение текущего ребра отсекателя (cutter[i], cutter[i + 1])
+            # И рассматриваемого ребра отсекаемого многоугольника (s, polygon[j]),
+            # Где s = polygon[j - 1]. cutter[i + 2] нам нужно, чтобы корректно найти нормаль.
             t = IsIntersection(
-                [s, f], [cutter[i], cutter[i + 1]], norm, cutter[i + 2])
+                [s, polygon[j]], [cutter[i], cutter[i + 1]], cutter[i + 2])
+            # Если есть пересечение, то заносим его в новый массив вершин.
             if t:
                 new.append(t)
-        # print(new, "\n\n")
-        polygon = copy.deepcopy(new)
+            # Запоминаем в s текущую вершину. (Чтобы на следующем шаге
+            # Искать пересечение polygon[j - 1] и polygon[j])
+            s = polygon[j]
+            # Проверяем, видна ли текущая вершина
+            if IsVisiable(s, cutter[i], cutter[i + 1], cutter[i + 2]):
+                # Если видна, то заносим ее в новый массив вершин.
+                new.append(s)
+        # Можно убедиться в полной невидимости многоугольника,
+        # относительно текущей границы отсекателя. При анализе
+        # последнего замыкающего ребра отсутствие результата означает невидимость
+        #  многоугольника относительно текущей границы отсекателя, а значит многоугольник невидимый.
+        if not len(new):
+            return False
 
-    if len(polygon) == 0:
-        return False
+        t = IsIntersection(
+            [s, f], [cutter[i], cutter[i + 1]], cutter[i + 2])
+        if t:
+            new.append(t)
+
+        polygon = deepcopy(new)
+        print("polygon = ", polygon)
+
     return polygon
 
 
@@ -146,7 +165,7 @@ def SolutionWrapper(canvas_class, cutter, polygon):
     polygon = GetNodes(polygon[0])
     cutter = GetNodes(cutter[0])
 
-    result = SutherlandHodgman(cutter, polygon, sign)
+    result = SutherlandHodgman(cutter, polygon)
 
     if not result:
         return
