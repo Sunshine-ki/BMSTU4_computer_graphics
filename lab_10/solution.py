@@ -26,14 +26,18 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class):
 
     z_start = -5
     z_stop = 5
-    z_step = 0.1
+    z_step = 0.3
 
+    count_i = round((z_stop - z_start) / z_step)
+    count_j = round((x_stop - x_start) / x_step)
+    print("count_i = ", count_i)
+    print("count_j = ", count_j)
+
+    i = 0
     for z in np.arange(z_start, z_stop + z_step, z_step):
+        j = 0
         for x in np.arange(x_start, x_stop + x_step, x_step):
-            if fabs(x - x_start) < EPS:
-                print("Я тут")
-            if fabs(x - x_stop) < EPS:
-                print("конец")
+
             # Вычисления текущих и следующих значений.
             x_next = x + x_step
             y_next = f(x_next, z)
@@ -44,9 +48,32 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class):
                                     DEFAULT_ANGLE_Y, DEFAULT_ANGLE_Z)
 
             # Сам алгоритм.
+            # Обрабатываем левое боковое ребро.
+            if not j:
+                # Если очередная точка является первой точкой первой кривой
+                if not i:
+                    # то запомнит ее в p_b.
+                    p_b = [x, y]
+                else:
+                    # Если очередная точка является первой точкой
+                    # не первой кривой, то соединить ее с точкой P
+                    # и запомнить ее в P
+                    canvas_class.draw_line(p_b, [x, y])
+                    p_b = [x, y]
+            # Обрабатываем правое боковое ребро
+            elif j == count_j:
+                # Если очередная точка является последней точкой первой кривой
+                if not i:
+                    # то запомнит ее в p_e.
+                    p_e = [x_next, y_next]
+                else:
+                    canvas_class.draw_line(p_e, [x_next, y_next])
+                    p_e = [x_next, y_next]
 
             # Отрисовка.
             canvas_class.draw_line([x, y], [x_next, y_next])
+            j += 1
+        i += 1
 
 
 def SolutionWrapper(choice, borders, step, canvas_class):
@@ -76,6 +103,11 @@ def SolutionWrapper(choice, borders, step, canvas_class):
     borders_z, step_z = [-5, 5], 1
 
     float_horizon(borders_x, step_x, borders_z, step_z, canvas_class)
+
+# if fabs(x - x_start) < EPS:
+#     print("Начало")
+# if fabs(x - x_stop) < EPS:
+#     print("конец")
 
 # x_start = -5
 # x_stop = 5
