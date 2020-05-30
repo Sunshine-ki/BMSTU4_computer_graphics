@@ -12,15 +12,9 @@ class paint_class():
     def __init__(self, root):
         self.canvas = Canvas(root, width=WIDTH, height=HEIGHT, bg="black")
         self.canvas.place(x=0, y=0)
-        self.initial_parameters_canvas()
 
     def clear_all(self):
         self.canvas.delete(ALL)
-        self.initial_parameters_canvas()
-
-    def initial_parameters_canvas(self):
-        self.canvas.create_text(
-            10, 10, text="Экран 800x800", font=FONT)
 
     def create_pixel(self, x, y, color="white"):
         x *= SCALE
