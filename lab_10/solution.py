@@ -1,4 +1,5 @@
 import numpy as np
+from math import fabs
 
 from functions_answer import int_answer, get_two_answer
 from interface import print_error
@@ -25,21 +26,26 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class):
 
     z_start = -5
     z_stop = 5
-    z_step = 0.2
+    z_step = 0.1
 
     for z in np.arange(z_start, z_stop + z_step, z_step):
         for x in np.arange(x_start, x_stop + x_step, x_step):
-            x_next = x + x_step + 0.1
+            if fabs(x - x_start) < EPS:
+                print("Я тут")
+            if fabs(x - x_stop) < EPS:
+                print("конец")
+            # Вычисления текущих и следующих значений.
+            x_next = x + x_step
             y_next = f(x_next, z)
-            # print(x, f(x, z))
             y = f(x, z)
-
             x, y = rotate(x, y, z, DEFAULT_ANGLE_X,
                           DEFAULT_ANGLE_Y, DEFAULT_ANGLE_Z)
-
             x_next, y_next = rotate(x_next, y_next, z, DEFAULT_ANGLE_X,
                                     DEFAULT_ANGLE_Y, DEFAULT_ANGLE_Z)
 
+            # Сам алгоритм.
+
+            # Отрисовка.
             canvas_class.draw_line([x, y], [x_next, y_next])
 
 

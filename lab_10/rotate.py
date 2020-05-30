@@ -9,7 +9,6 @@ def convers(arg):
 
 def rotateX(x, y, z, angle):
     angle = convers(angle)
-
     y = cos(angle) * y - sin(angle) * z
     return x, y
 
