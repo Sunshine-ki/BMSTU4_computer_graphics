@@ -1,12 +1,15 @@
 import numpy as np
+
 from functions_answer import int_answer, get_two_answer
 from interface import print_error
 from functions import *
 from constants import *
+from rotate import *
 
 
-def f(x):
-    return sin(x)
+def f(x, z):
+    # return x**2
+    return x**2 / 20 + z**2 / 20
 
 # def f(x, z):
 #     # return x * z * x
@@ -17,25 +20,48 @@ def f(x):
 def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class):
     # Инициализируем начальными значениями массивы горизонтов.
     # x = [0] * 10  # [0,0,...,0]
-    top = {x: 0 for x in range(1, WIDTH)}  # Верхний.
-    bottom = {x: HEIGHT for x in range(1, HEIGHT)}  # Нижний.
-
-    x_start = -10
-    x_stop = 10
-    x_step = 0.5
-    for x in np.arange(x_start, x_stop + x_step, x_step):
-        x_next = x + x_step
-        canvas_class.draw_line([x, f(x)],
-                               [x_next, f(x_next)])
+    # top = {x: 0 for x in range(1, WIDTH)}  # Верхний.
+    # bottom = {x: HEIGHT for x in range(1, HEIGHT)}  # Нижний.
 
     # z = 1
-    # x_start = -2
-    # x_stop = 2
-    # x_step = 0.1
-    # for x in np.arange(x_start, x_stop + x_step, x_step):
-    #     x_next = x + x_step + 0.1
-    #     print(x, f(x, z))
-    #     canvas_class.draw_line([x, f(x, z)], [x_next, f(x_next, z)])
+    x_start = -2
+    x_stop = 2
+    x_step = 0.1
+
+    z_start = -5
+    z_stop = 5
+    z_step = 0.5
+
+    for z in np.arange(z_start, z_stop + z_step, z_step):
+        for x in np.arange(x_start, x_stop + x_step, x_step):
+            x_next = x + x_step + 0.1
+            y_next = f(x_next, z)
+            # print(x, f(x, z))
+            y = f(x, z)
+            x, y, a = rotateX(x, y, z, DEFAULT_ANGLE_X)
+            x, y, a = rotateY(x, y, z, DEFAULT_ANGLE_Y)
+
+            x_next, y_next, a = rotateX(x_next, y_next, z, DEFAULT_ANGLE_X)
+            x_next, y_next, a = rotateY(x_next, y_next, z, DEFAULT_ANGLE_Y)
+
+            # canvas_class.create_pixel(x, y)
+
+            canvas_class.draw_line([x, y], [x_next, y_next])
+
+    # z_start = -5
+    # z_stop = 5
+    # z_step = 0.5
+
+    # x_start = -5
+    # x_stop = 5
+    # x_step = 0.5
+
+    # for z in np.arange(z_start, z_stop + z_step, z_step):
+    #     for x in np.arange(x_start, x_stop + x_step, x_step):
+    #         x_next = x + x_step
+    #         y = f(x, z)
+    #         y_next = f(x_next, z)
+    #         canvas_class.draw_line([x, y], [x_next, y_next])
 
 
 def SolutionWrapper(choice, borders, step, canvas_class):
@@ -65,3 +91,18 @@ def SolutionWrapper(choice, borders, step, canvas_class):
     borders_z, step_z = [-5, 5], 1
 
     float_horizon(borders_x, step_x, borders_z, step_z, canvas_class)
+
+# for x in np.arange(x_start, x_stop + x_step, x_step):
+#     x_next = x + x_step + 0.1
+#     y_next = f(x_next, z)
+#     # print(x, f(x, z))
+#     y = f(x, z)
+#     x, y, a = rotateX(x, y, z, DEFAULT_ANGLE_X)
+#     x, y, a = rotateY(x, y, z, DEFAULT_ANGLE_Y)
+
+#     x_next, y_next, a = rotateX(x_next, y_next, z, DEFAULT_ANGLE_X)
+#     x_next, y_next, a = rotateY(x_next, y_next, z, DEFAULT_ANGLE_Y)
+
+#     # canvas_class.create_pixel(x, y)
+
+#     canvas_class.draw_line([x, y], [x_next, y_next])

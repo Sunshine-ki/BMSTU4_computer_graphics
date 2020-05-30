@@ -53,9 +53,10 @@ def selection(count, list_text, coordinates):
     return var
 
 
-def create_entry(root, coordinates):
+def create_entry(root, coordinates, text="123"):
     entry = Entry(root, width="50")
     entry.place(x=coordinates[0], y=coordinates[1], anchor="center", width=150)
+    entry.insert(0, text)
     return entry
 
 

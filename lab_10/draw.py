@@ -23,8 +23,11 @@ class paint_class():
             10, 10, text="Экран 800x800", font=FONT)
 
     def create_pixel(self, x, y, color="white"):
+        x *= SCALE
+        y *= SCALE
         x += WIDTH // 2
-        y = HEIGHT//2 - y
+        y = HEIGHT // 2 - y
+
         self.canvas.create_line(round(x), round(y), round(
             x), round(y) + 1, fill=color)
 
