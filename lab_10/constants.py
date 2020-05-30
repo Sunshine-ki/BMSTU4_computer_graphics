@@ -1,6 +1,4 @@
 # FOR INTERFACE #
-CHOICE = ["Отсекатель", "Отсекаемый многоугольник"]
-
 WIDTH, HEIGHT = 800, 800
 
 FALSE = "-"
@@ -11,14 +9,14 @@ COLOR_LINE = ((136, 0, 250), "#8800fa")
 
 FONT = "Verdana 12"
 
-# FOR LINE #
 
-X = 0
-Y = 1
-
-X1 = 0
-Y1 = 1
-X2 = 2
-Y2 = 3
+CHOICE = [
+    "cos(x) * sin(z)",
+    "f3",
+    "f2",
+    "f3"
+]
 
 EPS = 1e-6
+
+SCALE = 20

@@ -29,6 +29,14 @@ def settings_interface(root, size, title):
     root.resizable(width=False, height=False)
 
 
+def option_menu(master, option, coordinates):
+    variable = StringVar(master)
+    variable.set(option[0])
+    w = OptionMenu(master, variable, *option)
+    w.place(x=coordinates[0], y=coordinates[1], anchor="center", width=200)
+    return variable
+
+
 def selection(count, list_text, coordinates):
     # Выбор.
     var = IntVar()
