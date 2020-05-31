@@ -35,6 +35,10 @@ class paint_class():
                                 font=FONT, tags="coordinates",  fill="blue")
 
 
+# def coordinate_transform(x, y):
+#     x
+
+
 def coordinate_transform(begin, end):
     for i in range(2):
         begin[i] *= SCALE

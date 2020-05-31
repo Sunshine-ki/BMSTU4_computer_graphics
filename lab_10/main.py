@@ -12,7 +12,7 @@ from solution import *
 def main():
     root = Tk()
 
-    settings_interface(root, "1200x800", "Лабораторная работа №10")
+    settings_interface(root, "1200x800", "Алгоритм Плавающего горизонта")
 
     canvas_class = paint_class(root)
 

@@ -9,12 +9,11 @@ from constants import *
 from rotate import *
 
 
-def ff(x, z):
-    return 5
+def FindIntersection(xk, xn, yprev):
+    pass
 
 
-def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles):
-    # f = ff
+def FloatHorizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles):
     # Инициализируем начальными значениями массивы горизонтов.
     # x =   # [0,0,...,0]
     # top = {x: 0 for x in range(1, WIDTH)}
@@ -32,7 +31,7 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles)
     z_step = step_z
 
     # count_i = round((z_stop - z_start) / z_step + 1)
-    count_j = ceil((x_stop - x_start) / x_step)
+    count = ceil((x_stop - x_start) / x_step)
 
     i = 0
     for z in np.arange(z_stop, z_start, -z_step):
@@ -60,7 +59,7 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles)
                     canvas_class.draw_line(p_b, [x, y])
                     p_b = [x, y]
             # Обрабатываем правое боковое ребро
-            elif j == count_j - 1:
+            elif j == count - 1:
                 # Если очередная точка является последней точкой первой кривой
                 if not i:
                     # то запомнит ее в p_e.
@@ -69,9 +68,33 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles)
                     canvas_class.draw_line(p_e, [x_next, y_next])
                     p_e = [x_next, y_next]
 
+            # Если сегмент кривой видим, то изобразить его целиком.
             if (y >= bottom[x] or y <= top[x]) and (y_next >= bottom[x] or y_next
                                                     <= top[x]):
                 canvas_class.draw_line([x, y], [x_next, y_next])
+
+            # if y < top[x] and y_next > top[x_next]:
+            #     dx = x_next - x
+            #     dy1 = top[x_next] - top[x]
+            #     dy2 = y_next - y
+            #     x_inters = x - dx * (y + top[x]) / (dy1 - dy2)
+            #     print(x, x_inters, x_next)
+
+            # Если видимость сегмента кривой изменилась, то найти точку пересечения с горизонтом
+            if y < top[x] and y_next > top[x_next]:
+                # print("Есть такое")
+                dx = x_next - x
+                dy_prev = top[x_next] - top[x]
+                dy_curr = y_next - y
+                x_intersection = x - dx * (y - top[x]) / (dy_curr - dy_prev)
+                # print(x, x_intersection, x_next)
+                m_curr = (y_next - y)/dx
+                y_intersection = m_curr * (x_intersection - x) + y
+                # print(y, y_intersection, y_next)
+                canvas_class.draw_line(
+                    [x, y], [x_intersection, y_intersection])
+
+                # print(x_intersection, y_intersection)
 
             # Если точка расположена выше верхнего или ниже нижнего горизонта,
             # то скорректировать массивы верхнего и нижнего горизонта.
@@ -85,7 +108,6 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles)
             # canvas_class.draw_line([x, y], [x_next, y_next])
             j += 1
         i += 1
-    # print(top, "\n\n", bottom)
 
 
 def SolutionWrapper(choice, borders, step, angles, canvas_class):
@@ -121,8 +143,8 @@ def SolutionWrapper(choice, borders, step, angles, canvas_class):
     index = CHOICE.index(choice.get())
 
     canvas_class.clear_all()
-    float_horizon(borders_x, step_x, borders_z, step_z,
-                  canvas_class, f[index], [angle_x, angle_y, angle_z])
+    FloatHorizon(borders_x, step_x, borders_z, step_z,
+                 canvas_class, f[index], [angle_x, angle_y, angle_z])
 
 
 # x_start = -5
