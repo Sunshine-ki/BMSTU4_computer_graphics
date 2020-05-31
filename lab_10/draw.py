@@ -10,13 +10,13 @@ class paint_class():
     canvas = None
 
     def __init__(self, root):
-        self.canvas = Canvas(root, width=WIDTH, height=HEIGHT, bg="black")
+        self.canvas = Canvas(root, width=WIDTH, height=HEIGHT, bg=COLOR_BG)
         self.canvas.place(x=0, y=0)
 
     def clear_all(self):
         self.canvas.delete(ALL)
 
-    def create_pixel(self, x, y, color="white"):
+    def create_pixel(self, x, y, color=COLOR_PIXEL):
         x *= SCALE
         y *= SCALE
         x += WIDTH // 2
@@ -25,7 +25,7 @@ class paint_class():
         self.canvas.create_line(round(x), round(y), round(
             x), round(y) + 1, fill=color)
 
-    def draw_line(self, begin, end, color="white"):
+    def draw_line(self, begin, end, color=COLOR_PIXEL):
         begin, end = coordinate_transformations(begin, end)
         self.canvas.create_line(begin[0], begin[1], end[0], end[1], fill=color)
 

@@ -1,53 +1,42 @@
 import numpy as np
-from math import fabs
+from math import fabs, ceil, sqrt
 
-from functions_answer import int_answer, get_two_answer
+from functions_answer import float_answer, get_two_answer
 from interface import print_error
 from functions import *
 from constants import *
 from rotate import *
 
 
-def f(x, z):
-    # return x**2
-    # return x**2 / 20 + z**2 / 20
-    return cos(x) * sin(z)
-
-
-def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class):
+def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles):
     # Инициализируем начальными значениями массивы горизонтов.
     # x = [0] * 10  # [0,0,...,0]
     # top = {x: 0 for x in range(1, WIDTH)}  # Верхний.
     # bottom = {x: HEIGHT for x in range(1, HEIGHT)}  # Нижний.
 
-    x_start = -2
-    x_stop = 2
-    x_step = 0.1
+    x_start = borders_x[0]
+    x_stop = borders_x[1]
+    x_step = step_x
 
-    z_start = -5
-    z_stop = 5
-    z_step = 0.3
+    z_start = borders_z[0]
+    z_stop = borders_z[1]
+    z_step = step_z
 
-    count_i = round((z_stop - z_start) / z_step)
-    count_j = round((x_stop - x_start) / x_step)
-    print("count_i = ", count_i)
-    print("count_j = ", count_j)
+    # count_i = round((z_stop - z_start) / z_step + 1)
+    count_j = ceil((x_stop - x_start) / x_step)
 
     i = 0
-    for z in np.arange(z_start, z_stop + z_step, z_step):
+    for z in np.arange(z_start, z_stop, z_step):
         j = 0
-        for x in np.arange(x_start, x_stop + x_step, x_step):
+        for x in np.arange(x_start, x_stop, x_step):
 
             # Вычисления текущих и следующих значений.
             x_next = x + x_step
             y_next = f(x_next, z)
             y = f(x, z)
-            x, y = rotate(x, y, z, DEFAULT_ANGLE_X,
-                          DEFAULT_ANGLE_Y, DEFAULT_ANGLE_Z)
-            x_next, y_next = rotate(x_next, y_next, z, DEFAULT_ANGLE_X,
-                                    DEFAULT_ANGLE_Y, DEFAULT_ANGLE_Z)
+            x, y = rotate(x, y, z, angles)
+            x_next, y_next = rotate(x_next, y_next, z, angles)
 
-            # Сам алгоритм.
             # Обрабатываем левое боковое ребро.
             if not j:
                 # Если очередная точка является первой точкой первой кривой
@@ -61,7 +50,7 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class):
                     canvas_class.draw_line(p_b, [x, y])
                     p_b = [x, y]
             # Обрабатываем правое боковое ребро
-            elif j == count_j:
+            elif j == count_j - 1:
                 # Если очередная точка является последней точкой первой кривой
                 if not i:
                     # то запомнит ее в p_e.
@@ -76,38 +65,42 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class):
         i += 1
 
 
-def SolutionWrapper(choice, borders, step, canvas_class):
-    # borders_x = get_two_answer(borders[0].get())
-    # if borders_x[0] == FALSE:
-    #     return
+def SolutionWrapper(choice, borders, step, angles, canvas_class):
+    borders_x = get_two_answer(borders[0].get())
+    if borders_x[0] == FALSE:
+        return
 
-    # step_x = int_answer(step[0].get())
-    # if not step_x:
-    #     return
+    step_x = float_answer(step[0].get())
+    if step_x == FALSE:
+        return
 
-    # borders_z = get_two_answer(borders[1].get())
-    # if borders_z[0] == FALSE:
-    #     return
+    borders_z = get_two_answer(borders[1].get())
+    if borders_z[0] == FALSE:
+        return
 
-    # step_z = int_answer(step[1].get())
-    # if not step_z:
-    #     return
+    step_z = float_answer(step[1].get())
+    if step_z == FALSE:
+        return
 
+    angle_x = float_answer(angles[0].get())
+    if angle_x == FALSE:
+        return
+
+    angle_y = float_answer(angles[1].get())
+    if angle_y == FALSE:
+        return
+
+    angle_z = float_answer(angles[2].get())
+    if angle_z == FALSE:
+        return
+
+    f = [f1, f2, f3, f4]
     index = CHOICE.index(choice.get())
 
-    # print("borders_x = ", borders_x, "\nborders_z = ", borders_z)
-    # print("step_x = ", step_x, "\nstep_z = ", step_z)
-    # print("choice = ", index, " = ", choice.get())
+    canvas_class.clear_all()
+    float_horizon(borders_x, step_x, borders_z, step_z,
+                  canvas_class, f[index], [angle_x, angle_y, angle_z])
 
-    borders_x, step_x = [-5, 5], 1
-    borders_z, step_z = [-5, 5], 1
-
-    float_horizon(borders_x, step_x, borders_z, step_z, canvas_class)
-
-# if fabs(x - x_start) < EPS:
-#     print("Начало")
-# if fabs(x - x_stop) < EPS:
-#     print("конец")
 
 # x_start = -5
 # x_stop = 5

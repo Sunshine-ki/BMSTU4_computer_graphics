@@ -27,8 +27,8 @@ def rotateZ(x, y, z, angle):
     return x, y
 
 
-def rotate(x, y, z, angle_x, angle_y, angle_z):
-    x, y = rotateX(x, y, z, DEFAULT_ANGLE_X)
-    x, y = rotateY(x, y, z, DEFAULT_ANGLE_Y)
-    x, y = rotateZ(x, y, z, DEFAULT_ANGLE_Z)
+def rotate(x, y, z, angles):
+    x, y = rotateX(x, y, z, angles[0])
+    x, y = rotateY(x, y, z, angles[1])
+    x, y = rotateZ(x, y, z, angles[2])
     return x, y

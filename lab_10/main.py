@@ -8,6 +8,8 @@ from constants import *
 from draw import *
 from solution import *
 
+# ∠
+
 
 def main():
     root = Tk()
@@ -30,10 +32,19 @@ def main():
     create_label(root, "Шаг по z:", [1000, 275])
     step_z = create_entry(root, [1000, 300], DEFAULT_STEP_Z)
 
+    create_label(root, "∠ по x:", [1000, 350])
+    angle_x = create_entry(root, [1000, 375], DEFAULT_ANGLE_X)
+
+    create_label(root, "∠ по y:", [1000, 400])
+    angle_y = create_entry(root, [1000, 425], DEFAULT_ANGLE_Y)
+
+    create_label(root, "∠ по z:", [1000, 450])
+    angle_z = create_entry(root, [1000, 475], DEFAULT_ANGLE_Z)
+
     # create_button("Отобразить", lambda arg1=canvas_class, arg2=cutter, arg3=contour:
     #               SolutionWrapper(arg1, arg2, arg3), [1000, 700])
     create_button(
-        "Отобразить", lambda arg1=choice_func, arg2=[borders_x, borders_z], arg3=[step_x, step_z], arg4=canvas_class:  SolutionWrapper(arg1, arg2, arg3, arg4), [1000, 700])
+        "Отобразить", lambda arg1=choice_func, arg2=[borders_x, borders_z], arg3=[step_x, step_z], arg4=[angle_x, angle_y, angle_z], arg5=canvas_class:  SolutionWrapper(arg1, arg2, arg3, arg4, arg5), [1000, 700])
 
     root.mainloop()
 

@@ -6,12 +6,12 @@ def f1(x, z):
 
 
 def f2(x, z):
-    return
+    return sqrt(fabs(x * z))
 
 
 def f3(x, z):
-    return
+    return exp(cos(x) * sin(z))
 
 
 def f4(x, z):
-    return
+    return sin(x * z)

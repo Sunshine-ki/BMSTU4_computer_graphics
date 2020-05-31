@@ -2,7 +2,7 @@ from interface import *
 from constants import *
 
 
-def int_answer(answer):
+def float_answer(answer):
     try:
         if answer == "":
             print_error("У вас пустой ввод")
@@ -11,7 +11,7 @@ def int_answer(answer):
             print_error("У вас больше одного числа.")
             return FALSE
 
-        a = int(answer)
+        a = float(answer)
     except:
         print_error("Некорректный ввод")
         return FALSE
