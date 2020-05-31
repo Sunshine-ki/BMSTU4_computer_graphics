@@ -9,16 +9,19 @@ from constants import *
 from rotate import *
 
 
-def FindIntersection(xk, xn, yprev):
-    pass
+# FindIntersection(x, x_next, top[x], top[x_next], y, y_next)
+def FindIntersection(x, x_next, y_prev_horiz, y_curr_horiz, y, y_next):
+    dx = x_next - x
+    dy_prev = y_curr_horiz - y_prev_horiz  # top[x_next] - top[x]
+    dy_curr = y_next - y
+    x_intersection = x - dx * (y - y_prev_horiz) / (dy_curr - dy_prev)
+    m_curr = (y_next - y) / dx
+    y_intersection = m_curr * (x_intersection - x) + y
+    return x_intersection, y_intersection
 
 
 def FloatHorizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles):
     # Инициализируем начальными значениями массивы горизонтов.
-    # x =   # [0,0,...,0]
-    # top = {x: 0 for x in range(1, WIDTH)}
-    # bottom = {x: HEIGHT for x in range(1, HEIGHT)}
-
     top = [HEIGHT] * WIDTH  # Верхний.
     bottom = [0] * WIDTH  # Нижний.
 
@@ -30,7 +33,6 @@ def FloatHorizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles):
     z_stop = borders_z[1]
     z_step = step_z
 
-    # count_i = round((z_stop - z_start) / z_step + 1)
     count = ceil((x_stop - x_start) / x_step)
 
     i = 0
@@ -82,22 +84,31 @@ def FloatHorizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles):
 
             # Если видимость сегмента кривой изменилась, то найти точку пересечения с горизонтом
             if y < top[x] and y_next > top[x_next]:
-                # print("Есть такое")
-                dx = x_next - x
-                dy_prev = top[x_next] - top[x]
-                dy_curr = y_next - y
-                x_intersection = x - dx * (y - top[x]) / (dy_curr - dy_prev)
-                # print(x, x_intersection, x_next)
-                m_curr = (y_next - y)/dx
-                y_intersection = m_curr * (x_intersection - x) + y
-                # print(y, y_intersection, y_next)
+                x_intersection, y_intersection = FindIntersection(
+                    x, x_next, top[x], top[x_next], y, y_next)
+                canvas_class.draw_line(
+                    [x, y], [x_intersection, y_intersection])
+            if y < bottom[x] and y_next > bottom[x_next]:
+                x_intersection, y_intersection = FindIntersection(
+                    x, x_next, bottom[x], bottom[x_next], y, y_next)
+                canvas_class.draw_line(
+                    [x_intersection, y_intersection], [x_next, y_next])
+            if y > top[x] and y_next < top[x_next]:
+                x_intersection, y_intersection = FindIntersection(
+                    x, x_next, top[x], top[x_next], y, y_next)
+                canvas_class.draw_line(
+                    [x_intersection, y_intersection], [x_next, y_next])
+            if y > bottom[x] and y_next < bottom[x_next]:
+                x_intersection, y_intersection = FindIntersection(
+                    x, x_next, bottom[x], bottom[x_next], y, y_next)
                 canvas_class.draw_line(
                     [x, y], [x_intersection, y_intersection])
 
-                # print(x_intersection, y_intersection)
+                # print(x, x_intersection, x_next)
+                # print(y, y_intersection, y_next)
 
-            # Если точка расположена выше верхнего или ниже нижнего горизонта,
-            # то скорректировать массивы верхнего и нижнего горизонта.
+                # Если точка расположена выше верхнего или ниже нижнего горизонта,
+                # то скорректировать массивы верхнего и нижнего горизонта.
             if y > bottom[x]:
                 bottom[x] = y
             if y < top[x]:
@@ -164,3 +175,17 @@ def SolutionWrapper(choice, borders, step, angles, canvas_class):
 #     # canvas_class.create_pixel(x, y)
 
 #     canvas_class.draw_line([x, y], [x_next, y_next])
+
+
+# Пересечение
+    # if y < top[x] and y_next > top[x_next]:
+    # dx = x_next - x
+    # dy_prev = top[x_next] - top[x]
+    # dy_curr = y_next - y
+    # x_intersection = x - dx * (y - top[x]) / (dy_curr - dy_prev)
+    # print(x, x_intersection, x_next)
+    # m_curr = (y_next - y)/dx
+    # y_intersection = m_curr * (x_intersection - x) + y
+    # print(y, y_intersection, y_next)
+    #     canvas_class.draw_line(
+    #         [x, y], [x_intersection, y_intersection])
