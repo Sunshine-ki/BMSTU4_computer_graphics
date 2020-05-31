@@ -2,17 +2,26 @@ import numpy as np
 from math import fabs, ceil, sqrt
 
 from functions_answer import float_answer, get_two_answer
+from draw import coordinate_transform
 from interface import print_error
 from functions import *
 from constants import *
 from rotate import *
 
 
+def ff(x, z):
+    return 5
+
+
 def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles):
+    # f = ff
     # Инициализируем начальными значениями массивы горизонтов.
-    # x = [0] * 10  # [0,0,...,0]
-    # top = {x: 0 for x in range(1, WIDTH)}  # Верхний.
-    # bottom = {x: HEIGHT for x in range(1, HEIGHT)}  # Нижний.
+    # x =   # [0,0,...,0]
+    # top = {x: 0 for x in range(1, WIDTH)}
+    # bottom = {x: HEIGHT for x in range(1, HEIGHT)}
+
+    top = [HEIGHT] * WIDTH  # Верхний.
+    bottom = [0] * WIDTH  # Нижний.
 
     x_start = borders_x[0]
     x_stop = borders_x[1]
@@ -26,10 +35,9 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles)
     count_j = ceil((x_stop - x_start) / x_step)
 
     i = 0
-    for z in np.arange(z_start, z_stop, z_step):
+    for z in np.arange(z_stop, z_start, -z_step):
         j = 0
         for x in np.arange(x_start, x_stop, x_step):
-
             # Вычисления текущих и следующих значений.
             x_next = x + x_step
             y_next = f(x_next, z)
@@ -37,6 +45,8 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles)
             x, y = rotate(x, y, z, angles)
             x_next, y_next = rotate(x_next, y_next, z, angles)
 
+            x, y, x_next, y_next = coordinate_transform(
+                [x, y], [x_next, y_next])
             # Обрабатываем левое боковое ребро.
             if not j:
                 # Если очередная точка является первой точкой первой кривой
@@ -45,8 +55,8 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles)
                     p_b = [x, y]
                 else:
                     # Если очередная точка является первой точкой
-                    # не первой кривой, то соединить ее с точкой P
-                    # и запомнить ее в P
+                    # не первой кривой, то соединить ее с точкой p_b
+                    # и запомнить ее в p_b
                     canvas_class.draw_line(p_b, [x, y])
                     p_b = [x, y]
             # Обрабатываем правое боковое ребро
@@ -59,10 +69,23 @@ def float_horizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles)
                     canvas_class.draw_line(p_e, [x_next, y_next])
                     p_e = [x_next, y_next]
 
+            if (y >= bottom[x] or y <= top[x]) and (y_next >= bottom[x] or y_next
+                                                    <= top[x]):
+                canvas_class.draw_line([x, y], [x_next, y_next])
+
+            # Если точка расположена выше верхнего или ниже нижнего горизонта,
+            # то скорректировать массивы верхнего и нижнего горизонта.
+            if y > bottom[x]:
+                bottom[x] = y
+            if y < top[x]:
+                top[x] = y
+
             # Отрисовка.
-            canvas_class.draw_line([x, y], [x_next, y_next])
+            # print(x, x_next)
+            # canvas_class.draw_line([x, y], [x_next, y_next])
             j += 1
         i += 1
+    # print(top, "\n\n", bottom)
 
 
 def SolutionWrapper(choice, borders, step, angles, canvas_class):

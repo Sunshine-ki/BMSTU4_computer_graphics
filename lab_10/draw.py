@@ -26,11 +26,16 @@ class paint_class():
             x), round(y) + 1, fill=color)
 
     def draw_line(self, begin, end, color=COLOR_PIXEL):
-        begin, end = coordinate_transformations(begin, end)
+        # begin, end = coordinate_transformations(begin, end)
         self.canvas.create_line(begin[0], begin[1], end[0], end[1], fill=color)
 
+    def in_canvas(self, event):
+        self.canvas.delete("coordinates")
+        self.canvas.create_text(event.x + 45, event.y - 15,  text=f"({event.x}, {event.y})",
+                                font=FONT, tags="coordinates",  fill="blue")
 
-def coordinate_transformations(begin, end):
+
+def coordinate_transform(begin, end):
     for i in range(2):
         begin[i] *= SCALE
         end[i] *= SCALE
@@ -39,4 +44,6 @@ def coordinate_transformations(begin, end):
     end[0] += WIDTH // 2
     begin[1] = HEIGHT // 2 - begin[1]
     end[1] = HEIGHT // 2 - end[1]
-    return begin, end
+    # return round(begin[0]), round(begin[1]), round(end[0]), round(end[1])
+    return int(round(begin[0])), int(round(begin[1])), int(round(end[0])), int(round(end[1]))
+    # return begin[0], begin[1], end[0], end[1]
