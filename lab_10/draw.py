@@ -27,6 +27,8 @@ class paint_class():
 
     def draw_line(self, begin, end, color=COLOR_PIXEL):
         # begin, end = coordinate_transformations(begin, end)
+        # begin[0], begin[1], end[0], end[1] = round(
+        #     begin[0]), round(begin[1]), round(end[0]), round(end[1])
         self.canvas.create_line(begin[0], begin[1], end[0], end[1], fill=color)
 
     def in_canvas(self, event):

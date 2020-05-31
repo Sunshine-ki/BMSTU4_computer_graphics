@@ -71,16 +71,14 @@ def FloatHorizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles):
                     p_e = [x_next, y_next]
 
             # Если сегмент кривой видим, то изобразить его целиком.
-            if (y >= bottom[x] or y <= top[x]) and (y_next >= bottom[x] or y_next
-                                                    <= top[x]):
-                canvas_class.draw_line([x, y], [x_next, y_next])
+            # if (y >= bottom[x] or y <= top[x]) and (y_next >= bottom[x] or y_next
+            #                                         <= top[x]):
+            #     canvas_class.draw_line([x, y], [x_next, y_next])
 
-            # if y < top[x] and y_next > top[x_next]:
-            #     dx = x_next - x
-            #     dy1 = top[x_next] - top[x]
-            #     dy2 = y_next - y
-            #     x_inters = x - dx * (y + top[x]) / (dy1 - dy2)
-            #     print(x, x_inters, x_next)
+            if y < top[x] and y_next < top[x_next]:
+                canvas_class.draw_line([x, y], [x_next, y_next])
+            if y > bottom[x] and y_next > bottom[x_next]:
+                canvas_class.draw_line([x, y], [x_next, y_next])
 
             # Если видимость сегмента кривой изменилась, то найти точку пересечения с горизонтом
             if y < top[x] and y_next > top[x_next]:
@@ -178,7 +176,7 @@ def SolutionWrapper(choice, borders, step, angles, canvas_class):
 
 
 # Пересечение
-    # if y < top[x] and y_next > top[x_next]:
+# if y < top[x] and y_next > top[x_next]:
     # dx = x_next - x
     # dy_prev = top[x_next] - top[x]
     # dy_curr = y_next - y
@@ -189,3 +187,11 @@ def SolutionWrapper(choice, borders, step, angles, canvas_class):
     # print(y, y_intersection, y_next)
     #     canvas_class.draw_line(
     #         [x, y], [x_intersection, y_intersection])
+
+# Работает ли ?
+# if y < top[x] and y_next > top[x_next]:
+#     dx = x_next - x
+#     dy1 = top[x_next] - top[x]
+#     dy2 = y_next - y
+#     x_inters = x - dx * (y + top[x]) / (dy1 - dy2)
+#     print(x, x_inters, x_next)
