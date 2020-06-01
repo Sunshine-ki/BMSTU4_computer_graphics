@@ -71,49 +71,43 @@ def FloatHorizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles):
                     p_e = [x_next, y_next]
 
             # Если сегмент кривой видим, то изобразить его целиком.
-            # if (y >= bottom[x] or y <= top[x]) and (y_next >= bottom[x] or y_next
-            #                                         <= top[x]):
-            #     canvas_class.draw_line([x, y], [x_next, y_next])
-
-            if y < top[x] and y_next < top[x_next]:
+            if y <= top[x] and y_next <= top[x_next]:
                 canvas_class.draw_line([x, y], [x_next, y_next])
-            if y > bottom[x] and y_next > bottom[x_next]:
+            if y >= bottom[x] and y_next >= bottom[x_next]:
                 canvas_class.draw_line([x, y], [x_next, y_next])
 
             # Если видимость сегмента кривой изменилась, то найти точку пересечения с горизонтом
-            if y < top[x] and y_next > top[x_next]:
+            if y < top[x] and y_next >= top[x_next]:
                 x_intersection, y_intersection = FindIntersection(
                     x, x_next, top[x], top[x_next], y, y_next)
                 canvas_class.draw_line(
                     [x, y], [x_intersection, y_intersection])
-            if y < bottom[x] and y_next > bottom[x_next]:
-                x_intersection, y_intersection = FindIntersection(
-                    x, x_next, bottom[x], bottom[x_next], y, y_next)
-                canvas_class.draw_line(
-                    [x_intersection, y_intersection], [x_next, y_next])
-            if y > top[x] and y_next < top[x_next]:
+
+            elif y >= top[x] and y_next < top[x_next]:
                 x_intersection, y_intersection = FindIntersection(
                     x, x_next, top[x], top[x_next], y, y_next)
                 canvas_class.draw_line(
                     [x_intersection, y_intersection], [x_next, y_next])
-            if y > bottom[x] and y_next < bottom[x_next]:
+
+            elif y <= bottom[x] and y_next > bottom[x_next]:
+                x_intersection, y_intersection = FindIntersection(
+                    x, x_next, bottom[x], bottom[x_next], y, y_next)
+                canvas_class.draw_line(
+                    [x_intersection, y_intersection], [x_next, y_next])
+
+            elif y > bottom[x] and y_next < bottom[x_next]:
                 x_intersection, y_intersection = FindIntersection(
                     x, x_next, bottom[x], bottom[x_next], y, y_next)
                 canvas_class.draw_line(
                     [x, y], [x_intersection, y_intersection])
 
-                # print(x, x_intersection, x_next)
-                # print(y, y_intersection, y_next)
-
-                # Если точка расположена выше верхнего или ниже нижнего горизонта,
-                # то скорректировать массивы верхнего и нижнего горизонта.
+            # Если точка расположена выше верхнего или ниже нижнего горизонта,
+            # то скорректировать массивы верхнего и нижнего горизонта.
             if y > bottom[x]:
                 bottom[x] = y
             if y < top[x]:
                 top[x] = y
-
             # Отрисовка.
-            # print(x, x_next)
             # canvas_class.draw_line([x, y], [x_next, y_next])
             j += 1
         i += 1
@@ -195,3 +189,8 @@ def SolutionWrapper(choice, borders, step, angles, canvas_class):
 #     dy2 = y_next - y
 #     x_inters = x - dx * (y + top[x]) / (dy1 - dy2)
 #     print(x, x_inters, x_next)
+
+# Если сегмент кривой видим, то изобразить его целиком.
+# if (y >= bottom[x] or y <= top[x]) and (y_next >= bottom[x] or y_next
+#                                         <= top[x]):
+#     canvas_class.draw_line([x, y], [x_next, y_next])

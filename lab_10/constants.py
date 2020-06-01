@@ -3,8 +3,8 @@ WIDTH, HEIGHT = 800, 800
 
 FALSE = "-"
 
-COLOR_BG = "black"
-COLOR_PIXEL = "snow"  # "cyan"
+COLOR_BG = "black"  # "white"
+COLOR_PIXEL = "white"  # "cyan"
 
 FONT = "Verdana 12"
 
