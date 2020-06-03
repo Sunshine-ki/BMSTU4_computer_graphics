@@ -2,115 +2,189 @@ import numpy as np
 from math import fabs, ceil, sqrt
 
 from functions_answer import float_answer, get_two_answer
-from draw import coordinate_transform
+# from draw import coordinate_transform
 from interface import print_error
 from functions import *
 from constants import *
 from rotate import *
 
-
-# FindIntersection(x, x_next, top[x], top[x_next], y, y_next)
-def FindIntersection(x, x_next, y_prev_horiz, y_curr_horiz, y, y_next):
-    dx = x_next - x
-    dy_prev = y_curr_horiz - y_prev_horiz  # top[x_next] - top[x]
-    dy_curr = y_next - y
-    x_intersection = x - dx * (y - y_prev_horiz) / (dy_curr - dy_prev)
-    m_curr = (y_next - y) / dx
-    y_intersection = m_curr * (x_intersection - x) + y
-    return x_intersection, y_intersection
+top = [0] * WIDTH  # Верхний.
+bottom = [HEIGHT] * WIDTH  # Нижний.
 
 
-def FloatHorizon(borders_x, step_x, borders_z, step_z, canvas_class, f, angles):
+# Подпрограмма вычисляет пересечение с горизонтом.
+def Intersection(x1, y1, x2, y2, arr, canvas_class):
+    dx = x2 - x1
+    dyc = y2 - y1
+    dyp = arr[x2] - arr[x1]
+    if dx == 0:
+        xi = x2
+        yi = arr[x2]
+        return xi, yi
+    if y1 == arr[x1] and y2 == arr[x2]:
+        return x1, y1
+    m = dyc / dx
+    xi = x1 - round(dx * (y1 - arr[x1]) / (dyc - dyp))
+    yi = round((xi - x1) * m + y1)
+    return xi, yi
+
+# Подпрограмма, определяющая видимость точки.
+# flag:
+# 0 - невидима.
+# 1 - выше верхнего.
+# -1 - ниже нижнего.
+def Visible(x, y):  # Visible point
+    global top, bottom
+    # Если точка, ниже нижнего горизонта (или на нем)
+    # То она видима. 
+    if y <= bottom[x]:
+        return -1
+    # Если точка выше верхнего горизонта (или на нем)
+    # То она видима.
+    if y >= top[x]:  
+        return 1
+    # Иначе она невидима.
+    return 0
+
+
+
+# Подпрограмма заполнения массивов горизонтов между x1 и x2 
+# На основе линейной интерполяции.
+def Horizon(x1, y1, x2, y2, canvas_class):
+    global top, bottom
+    # Проверка вертикальности наклона.
+    if (x2 - x1 == 0):
+        top[x2] = max(top[x2], y2)
+        bottom[x2] = min(bottom[x2], y2)
+        return
+    # Иначе вычисляем наклон.
+    m = (y2 - y1) / (x2 - x1)
+    # Движемся по x с шагом 1, чтобы заполнить 
+    # Массивы от x1 до x2.
+    for x in range(x1, x2 + 1):
+        y = round(m * (x - x1) + y1)
+        top[x] = max(top[x], y)
+        bottom[x] = min(bottom[x], y)
+
+
+# Функция обработки и обновления точек бокового рёбра
+def Side(x, y, xe, ye,canvas_class):
+    if (xe != -1):
+        # Если кривая не первая
+        canvas_class.draw_line([xe, ye], [x, y])
+        Horizon(xe, ye, x, y, canvas_class)
+    xe = x
+    ye = y
+    return xe, ye
+
+
+def FloatHorizon(borders_x, x_step, borders_z, z_step, canvas_class, f, angles):
+    global top, bottom
     # Инициализируем начальными значениями массивы горизонтов.
-    top = [HEIGHT] * WIDTH  # Верхний.
-    bottom = [0] * WIDTH  # Нижний.
+    top = [0] * WIDTH  # Верхний.
+    bottom = [HEIGHT] * WIDTH  # Нижний.
 
     x_start = borders_x[0]
-    x_stop = borders_x[1]
-    x_step = step_x
+    x_end = borders_x[1]
 
     z_start = borders_z[0]
-    z_stop = borders_z[1]
-    z_step = step_z
+    z_end = borders_z[1]
 
-    count = ceil((x_stop - x_start) / x_step)
+    x_left, y_left = -1, -1
+    x_right, y_right = -1, -1
 
-    i = 0
-    for z in np.arange(z_stop, z_start, -z_step):
-        j = 0
-        for x in np.arange(x_start, x_stop, x_step):
-            # Вычисления текущих и следующих значений.
-            x_next = x + x_step
-            y_next = f(x_next, z)
-            y = f(x, z)
-            x, y = rotate(x, y, z, angles)
-            x_next, y_next = rotate(x_next, y_next, z, angles)
+    z = z_end
+    while z >= z_start - z_step / 2:
 
-            x, y, x_next, y_next = coordinate_transform(
-                [x, y], [x_next, y_next])
-            # Обрабатываем левое боковое ребро.
-            if not j:
-                # Если очередная точка является первой точкой первой кривой
-                if not i:
-                    # то запомнит ее в p_b.
-                    p_b = [x, y]
+        x_prev = x_start
+        y_prev = f(x_start, z)
+        x_prev, y_prev = transform(x_prev,y_prev, z, angles)
+
+        flag_prev = Visible(x_prev, y_prev)
+        #
+        x_left, y_left = Side(x_prev, y_prev, x_left, y_left, canvas_class)
+        x = x_start
+        while x <= x_end + x_step / 2:
+            y_curr = f(x, z)
+            x_curr, y_curr = transform(x, y_curr, z, angles)
+            # Проверка видимости текущей точки. 
+            flag_curr = Visible(x_curr, y_curr)
+            # Равенство флагов означает, что обе точки находятся
+            # Либо выше верхнего горизонта, либо ниже нижнего,
+            # Либо обе невидимы.
+            if flag_curr == flag_prev:
+                # Если текущая вершина выше верхнего горизонта
+                # Или ниже нижнего (Предыдущая такая же)
+                if flag_curr != 0:
+                    # Значит отображаем отрезок от предыдущей до текущей.
+                    canvas_class.draw_line([x_prev, y_prev], [x_curr, y_curr])
+                    Horizon(x_prev, y_prev, x_curr, y_curr, canvas_class)
+                # flag_curr == 0 означает, что и flag_prev == 0,
+                # А значит часть от flag_curr до flag_prev невидима. Ничего не делаем.
+            else:
+                # Если видимость изменилась, то
+                # Вычисляем пересечение.
+                if flag_curr == 0:
+                    if flag_prev == 1:
+                        # Сегмент "входит" в верхний горизонт.
+                        # Ищем пересечение с верхним горизонтом.
+                        xi, yi = Intersection(x_prev, y_prev, x_curr, y_curr, top, canvas_class)
+                    else: # flag_prev == -1 (flag_prev нулю (0) не может быть равен, т.к. мы обработали это выше).
+                        # Сегмент "входит" в нижний горизонт.
+                        # Ищем пересечение с нижним горизонтом.
+                        xi, yi = Intersection(x_prev, y_prev, x_curr, y_curr, bottom, canvas_class)
+                    # Отображаем сегмент, от предыдущий точки, до пересечения.
+                    canvas_class.draw_line([x_prev, y_prev], [xi, yi])
+                    Horizon(x_prev, y_prev, xi, yi, canvas_class)
                 else:
-                    # Если очередная точка является первой точкой
-                    # не первой кривой, то соединить ее с точкой p_b
-                    # и запомнить ее в p_b
-                    canvas_class.draw_line(p_b, [x, y])
-                    p_b = [x, y]
-            # Обрабатываем правое боковое ребро
-            elif j == count - 1:
-                # Если очередная точка является последней точкой первой кривой
-                if not i:
-                    # то запомнит ее в p_e.
-                    p_e = [x_next, y_next]
-                else:
-                    canvas_class.draw_line(p_e, [x_next, y_next])
-                    p_e = [x_next, y_next]
-
-            # Если сегмент кривой видим, то изобразить его целиком.
-            if y <= top[x] and y_next <= top[x_next]:
-                canvas_class.draw_line([x, y], [x_next, y_next])
-            if y >= bottom[x] and y_next >= bottom[x_next]:
-                canvas_class.draw_line([x, y], [x_next, y_next])
-
-            # Если видимость сегмента кривой изменилась, то найти точку пересечения с горизонтом
-            if y < top[x] and y_next >= top[x_next]:
-                x_intersection, y_intersection = FindIntersection(
-                    x, x_next, top[x], top[x_next], y, y_next)
-                canvas_class.draw_line(
-                    [x, y], [x_intersection, y_intersection])
-
-            elif y >= top[x] and y_next < top[x_next]:
-                x_intersection, y_intersection = FindIntersection(
-                    x, x_next, top[x], top[x_next], y, y_next)
-                canvas_class.draw_line(
-                    [x_intersection, y_intersection], [x_next, y_next])
-
-            elif y <= bottom[x] and y_next > bottom[x_next]:
-                x_intersection, y_intersection = FindIntersection(
-                    x, x_next, bottom[x], bottom[x_next], y, y_next)
-                canvas_class.draw_line(
-                    [x_intersection, y_intersection], [x_next, y_next])
-
-            elif y > bottom[x] and y_next < bottom[x_next]:
-                x_intersection, y_intersection = FindIntersection(
-                    x, x_next, bottom[x], bottom[x_next], y, y_next)
-                canvas_class.draw_line(
-                    [x, y], [x_intersection, y_intersection])
-
-            # Если точка расположена выше верхнего или ниже нижнего горизонта,
-            # то скорректировать массивы верхнего и нижнего горизонта.
-            if y > bottom[x]:
-                bottom[x] = y
-            if y < top[x]:
-                top[x] = y
-            # Отрисовка.
-            # canvas_class.draw_line([x, y], [x_next, y_next])
-            j += 1
-        i += 1
+                    if flag_curr == 1:
+                        if flag_prev == 0:
+                            # Сегмент "выходит" из верхнего горизонта.
+                            # Ищем пересечение с верхним горизонтом. 
+                            xi, yi = Intersection(x_prev, y_prev, x_curr, y_curr, top, canvas_class)
+                            # Отображаем сегмент от пересечения до текущей точки.
+                            canvas_class.draw_line([xi, yi], [x_curr, y_curr])
+                            Horizon(xi, yi, x_curr, y_curr, canvas_class) 
+                        else: # flag_prev == -1
+                            # Сегмент начинается с точки, ниже нижнего горизонта
+                            # И заканчивается в точке выше верхнего горизонта.
+                            # Нужно искать 2 пересечения.
+                            # Первое пересечение с нижним горизонтом.
+                            xi, yi = Intersection(x_prev, y_prev, x_curr, y_curr, bottom, canvas_class)
+                            # Отображаем сегмент от предыдущей то пересечения.
+                            canvas_class.draw_line([x_prev, y_prev], [xi, yi])
+                            Horizon(x_prev, y_prev, xi, yi, canvas_class)
+                            # Второе пересечение с верхним горизонтом.
+                            xi, yi = Intersection(x_prev, y_prev, x_curr, y_curr, top, canvas_class)
+                            # Отображаем сегмент от пересечения до текущей.
+                            canvas_class.draw_line([xi, yi], [x_curr, y_curr])
+                            Horizon(xi, yi, x_curr, y_curr, canvas_class)
+                    else: # flag_curr == -1
+                        if flag_prev == 0:
+                            # Сегмент "выходит" из нижнего горизонта.
+                            # Ищем пересечение с нижним горизонтом.
+                            xi, yi = Intersection(x_prev, y_prev, x_curr, y_curr, bottom, canvas_class)
+                            canvas_class.draw_line([xi, yi], [x_curr, y_curr])
+                            Horizon(xi, yi, x_curr, y_curr, canvas_class)  
+                        else:
+                            # Сегмент начинается с точки, выше верхнего горизонта
+                            # И заканчивается в точке ниже нижнего горизонта.
+                            # Нужно искать 2 пересечения.
+                            # Первое пересечение с верхним горизонтом.
+                            xi, yi = Intersection(x_prev, y_prev, x_curr, y_curr, top, canvas_class)
+                            # Отображаем сегмент от предыдущей до пересечения.
+                            canvas_class.draw_line([x_prev, y_prev], [xi, yi])
+                            Horizon(x_prev, y_prev, xi, yi, canvas_class)
+                            # Ищем второе пересечение с нижним горизонтом.
+                            xi, yi = Intersection(x_prev, y_prev, x_curr, y_curr, bottom, canvas_class)
+                            # Отображаем сегмент от пересечения до текущей.
+                            canvas_class.draw_line([xi, yi], [x_curr, y_curr])
+                            Horizon(xi, yi, x_curr, y_curr, canvas_class)
+            x_prev, y_prev = x_curr, y_curr
+            flag_prev = flag_curr
+            x += x_step
+        x_right, y_right = Side(x_prev, y_prev, x_right, y_right,canvas_class)
+        z -= z_step
 
 
 def SolutionWrapper(choice, borders, step, angles, canvas_class):
@@ -148,49 +222,3 @@ def SolutionWrapper(choice, borders, step, angles, canvas_class):
     canvas_class.clear_all()
     FloatHorizon(borders_x, step_x, borders_z, step_z,
                  canvas_class, f[index], [angle_x, angle_y, angle_z])
-
-
-# x_start = -5
-# x_stop = 5
-# x_step = 0.5
-# for x in np.arange(x_start, x_stop + x_step, x_step):
-#     x_next = x + x_step + 0.1
-#     y_next = f(x_next, z)
-#     # print(x, f(x, z))
-#     y = f(x, z)
-#     x, y, a = rotateX(x, y, z, DEFAULT_ANGLE_X)
-#     x, y, a = rotateY(x, y, z, DEFAULT_ANGLE_Y)
-
-#     x_next, y_next, a = rotateX(x_next, y_next, z, DEFAULT_ANGLE_X)
-#     x_next, y_next, a = rotateY(x_next, y_next, z, DEFAULT_ANGLE_Y)
-
-#     # canvas_class.create_pixel(x, y)
-
-#     canvas_class.draw_line([x, y], [x_next, y_next])
-
-
-# Пересечение
-# if y < top[x] and y_next > top[x_next]:
-    # dx = x_next - x
-    # dy_prev = top[x_next] - top[x]
-    # dy_curr = y_next - y
-    # x_intersection = x - dx * (y - top[x]) / (dy_curr - dy_prev)
-    # print(x, x_intersection, x_next)
-    # m_curr = (y_next - y)/dx
-    # y_intersection = m_curr * (x_intersection - x) + y
-    # print(y, y_intersection, y_next)
-    #     canvas_class.draw_line(
-    #         [x, y], [x_intersection, y_intersection])
-
-# Работает ли ?
-# if y < top[x] and y_next > top[x_next]:
-#     dx = x_next - x
-#     dy1 = top[x_next] - top[x]
-#     dy2 = y_next - y
-#     x_inters = x - dx * (y + top[x]) / (dy1 - dy2)
-#     print(x, x_inters, x_next)
-
-# Если сегмент кривой видим, то изобразить его целиком.
-# if (y >= bottom[x] or y <= top[x]) and (y_next >= bottom[x] or y_next
-#                                         <= top[x]):
-#     canvas_class.draw_line([x, y], [x_next, y_next])

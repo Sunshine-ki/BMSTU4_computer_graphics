@@ -2,6 +2,7 @@ from math import *
 
 
 def f1(x, z):
+    # return x + z
     return cos(x) * sin(z)
 
 

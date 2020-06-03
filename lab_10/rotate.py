@@ -1,8 +1,13 @@
 from math import pi, sin, cos
-
 from constants import *
 
-
+def scale(x, y):
+    x *= SCALE
+    y *= SCALE
+    x += WIDTH // 2
+    y += HEIGHT // 2 # - y
+    return round(x), round(y)
+    
 def convers(arg):
     return arg * pi / 180
 
@@ -27,8 +32,9 @@ def rotateZ(x, y, z, angle):
     return x, y
 
 
-def rotate(x, y, z, angles):
+def transform(x, y, z, angles):
     x, y = rotateX(x, y, z, angles[0])
     x, y = rotateY(x, y, z, angles[1])
     x, y = rotateZ(x, y, z, angles[2])
-    return x, y
+    return scale(x, y)
+

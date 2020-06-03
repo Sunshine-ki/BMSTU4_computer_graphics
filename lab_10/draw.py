@@ -17,18 +17,18 @@ class paint_class():
         self.canvas.delete(ALL)
 
     def create_pixel(self, x, y, color=COLOR_PIXEL):
-        x *= SCALE
-        y *= SCALE
-        x += WIDTH // 2
-        y = HEIGHT // 2 - y
+        # x *= SCALE
+        # y *= SCALE
+        # x += WIDTH // 2
+        # y = HEIGHT // 2 - y
 
         self.canvas.create_line(round(x), round(y), round(
             x), round(y) + 1, fill=color)
 
     def draw_line(self, begin, end, color=COLOR_PIXEL):
-        # begin, end = coordinate_transformations(begin, end)
-        # begin[0], begin[1], end[0], end[1] = round(
-        #     begin[0]), round(begin[1]), round(end[0]), round(end[1])
+        # if begin[0] ==  begin[1] and end[0] == end[1]:
+        #     self.create_pixel(begin[0], begin[1])
+        #     return
         self.canvas.create_line(begin[0], begin[1], end[0], end[1], fill=color)
 
     def in_canvas(self, event):
@@ -37,8 +37,6 @@ class paint_class():
                                 font=FONT, tags="coordinates",  fill="blue")
 
 
-# def coordinate_transform(x, y):
-#     x
 
 
 def coordinate_transform(begin, end):
